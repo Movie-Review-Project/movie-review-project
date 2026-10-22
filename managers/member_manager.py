@@ -10,10 +10,16 @@ class MemberManager:
         )
         self.members = self.load_members()
 
-    # members.jon 파일에서 회원 정보 불러오기
+    # members.json 파일에서 회원 정보 불러오기
     def load_members(self):
         with open(self.file_path, "r", encoding="utf-8") as file:
             return json.load(file)
+
+    # members.json 파일에 회원 정보 저장
+    def save_members(self):
+        with open(self.file_path, 'w', encoding='utf-8') as file:
+            return json.dump(self.members, file, ensure_ascii=False, indent=4)
+
 
 
 def main():
