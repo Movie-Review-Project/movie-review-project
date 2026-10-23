@@ -63,7 +63,7 @@ class MemberManager:
         return True
 
     # 회원 정보 추가
-    def add_member(self, member: Member) -> bool:
+    def do_member_save(self, member: Member) -> bool:
         if not self.is_valid_member(member):
             print('회원 정보를 정확하게 입력해주세요.')
             return False
@@ -83,7 +83,7 @@ class MemberManager:
 
         return self.members
 
-    def do_select_one(self, member_id: str) -> Member:
+    def do_select_member_one(self, member_id: str) -> Member:
         for member in self.members:
             if member_id == member['member_id']:
                 return member
@@ -103,6 +103,7 @@ class MemberManager:
             'phone': member.phone,
         }
 
+        # TODO 메시지 추가해야 함
         # 수정할 정보가 없는 경우
         if all(value is None for value in fields.values()):
             return False
@@ -116,7 +117,7 @@ class MemberManager:
         return True
 
     # 회원 정보 수정
-    def do_update(self, update_member: Member) -> bool:
+    def do_member_update(self, update_member: Member) -> bool:
         if not self.is_valid_update_member(update_member):
             return False
 
@@ -139,7 +140,7 @@ class MemberManager:
 
         return False
 
-    def do_delete(self, member_id: str) -> bool:
+    def do_member_delete(self, member_id: str) -> bool:
         for member in self.members:
             if member_id == member['member_id']:
                 self.members.remove(member)
@@ -232,29 +233,29 @@ def main():
     member2 = Member('user01', '홍길순', 'abc12345', 'test2@gmail.com', '01012345678')
     member3 = Member('user02', '박민철', 'abc12345', 'test3@gmail.com', '01012345678')
 
-    print(manager.add_member(member1))
-    print(manager.add_member(member2))
-    print(manager.add_member(member3))
+    print(manager.do_member_save(member1))
+    print(manager.do_member_save(member2))
+    print(manager.do_member_save(member3))
 
     print('\n=== 회원 정보 전체 조회 테스트 ===')
     print(manager.do_retrieve())
 
     print('\n=== 회원 정보 상세 조회 테스트 ===')
-    print(f'user01: {manager.do_select_one("user01")}')
-    print(f'user99: {manager.do_select_one("user99")}')
+    print(f'user01: {manager.do_select_member_one("user01")}')
+    print(f'user99: {manager.do_select_member_one("user99")}')
 
     print('\n=== 회원 정보 수정 테스트 ===')
     update_member1 = Member('user01', '홍길동1', 'abc12345', 'test11@gmail.com')
     update_member2 = Member('user99', '홍길동1', 'abc12345', 'test11@gmail.com')
 
-    print(f'user01: {manager.do_update(update_member1)}')
-    print(f'user99: {manager.do_update(update_member2)}')
+    print(f'user01: {manager.do_member_update(update_member1)}')
+    print(f'user99: {manager.do_member_update(update_member2)}')
 
     print('\n=== 회원 정보 삭제 테스트 ===')
     # 존재하는 회원 삭제
-    print(manager.do_delete('user01'))
+    print(manager.do_member_delete('user01'))
     # 존재하지 않는 회원 삭제
-    print(manager.do_delete('user99'))
+    print(manager.do_member_delete('user99'))
 
 
 if __name__ == "__main__":
