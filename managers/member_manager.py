@@ -30,43 +30,35 @@ class MemberManager:
                 return False
         return True
 
-    # 회원 정보 유효성 검사
+    # 개별 항목 유효성 검사
+    def is_valid_field(self, field: str, value: str) -> bool:
+        patterns = {
+            'member_id': r'[a-zA-Z0-9]{4,12}',
+            'name': r'.+',
+            'password': r'(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]{8,10}',
+            'email': r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}',
+            'phone': r'010[0-9]{8}',
+        }
 
-    def is_valid_member(self, member: Member) -> bool:
         # 자료형 및 빈 값 검사
-        values = [
-            member.member_id,
-            member.name,
-            member.password,
-            member.email,
-            member.phone,
-        ]
-
-        if not all(isinstance(value, str) and value.strip() for value in values):
+        if not isinstance(value, str) or not value.strip():
             return False
 
-        # 정규표현식
-        id_pattern = r'[a-zA-Z0-9]{4,12}'
+        return re.fullmatch(patterns[field], value) is not None
 
-        password_pattern = r'(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]{8,10}'
-        email_pattern = r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'
-        phone_pattern = r'010[0-9]{8}'
+    # 회원가입 유효성 검사
+    def is_valid_member(self, member: Member) -> bool:
+        fields = {
+            'member_id': member.member_id,
+            'name': member.name,
+            'password': member.password,
+            'email': member.email,
+            'phone': member.phone,
+        }
 
-        if not re.fullmatch(id_pattern, member.member_id):
-            print('아이디 형식은 4~12 글자 영어나 숫자입니다.')
-            return False
-
-        if not re.fullmatch(password_pattern, member.password):
-            print('비밀번호 형식은 8~10자리 영어나 숫자입니다.')
-            return False
-
-        if not re.fullmatch(email_pattern, member.email):
-            print('이메일 형식이 올바르지 않습니다.')
-            return False
-
-        if not re.fullmatch(phone_pattern, member.phone):
-            print('전화번호 11자리를 입력해주세요. (ex:01012341234)')
-            return False
+        for field, value in fields.items():
+            if not self.is_valid_field(field, value):
+                return False
 
         return True
 
@@ -97,6 +89,55 @@ class MemberManager:
                 return member
         print('존재하는 회원이 없습니다.')
         return None
+
+    # 회원 수정 유효성 검사
+    def is_valid_update_member(self, member: Member) -> bool:
+        # 아이디 검사
+        if not self.is_valid_field('member_id', member.member_id):
+            return False
+
+        fields = {
+            'name': member.name,
+            'password': member.password,
+            'email': member.email,
+            'phone': member.phone,
+        }
+
+        # 수정할 정보가 없는 경우
+        if all(value is None for value in fields.values()):
+            return False
+
+        # 입력한 항목만 유효성 검사
+        for field, value in fields.items():
+            if value is not None:
+                if not self.is_valid_field(field, value):
+                    return False
+
+        return True
+
+    # 회원 정보 수정
+    def do_update(self, update_member: Member) -> bool:
+        if not self.is_valid_update_member(update_member):
+            return False
+
+        for member in self.members:
+            if update_member.member_id == member['member_id']:
+                if update_member.name is not None:
+                    member['name'] = update_member.name
+
+                if update_member.password is not None:
+                    member['password'] = update_member.password
+
+                if update_member.email is not None:
+                    member['email'] = update_member.email
+
+                if update_member.phone is not None:
+                    member['phone'] = update_member.phone
+
+                self.save_members()
+                return True
+
+        return False
 
 
 def main():
@@ -190,6 +231,13 @@ def main():
     print('\n=== 회원 정보 상세 조회 테스트 ===')
     print(f'user01: {manager.do_select_one("user01")}')
     print(f'user99: {manager.do_select_one("user99")}')
+
+    print('\n=== 회원 정보 수정 테스트 ===')
+    update_member1 = Member('user01', '홍길동1', 'abc12345', 'test11@gmail.com')
+    update_member2 = Member('user99', '홍길동1', 'abc12345', 'test11@gmail.com')
+
+    print(f'user01: {manager.do_update(update_member1)}')
+    print(f'user99: {manager.do_update(update_member2)}')
 
 
 if __name__ == "__main__":
