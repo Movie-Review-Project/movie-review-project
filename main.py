@@ -1,35 +1,47 @@
-import MovieManager, MemberManager, ReviewManager
+from managers.member_manager import MemberManager
+from managers.movie_manager import MovieManager
+from managers.review_manager import ReviewManager
+
+# 정수 입력 (출력문구, min~max)
+def input_int(prompt, min_val, max_val):
+    while True:
+        try:
+            num = int(input(prompt))
+        except ValueError:
+            print("정수를 입력해주세요")
+            continue
+        if min_val <= num <= max_val:
+            return num
+        print(f"{min_val}~{max_val} 사이의 숫자를 입력해주세요")
 
 # 시작 화면
 def show_start_menu():
     print("="*50)
     print("(영화 리뷰 & 관람 기록 관리 시스템)")
-    print("="*50)
-    print("1. 회원가입")
-    print("2. 로그인")
-    print("="*50)
-    start = int(input("선택:"))
+    start = input_int("선택: ", 1, 2)
     print()
     return start
 
 # 영화 목록 출력
-def show_movie_list(movie_list):
+def show_movie_list(movie_manager):
+    movie_list = movie_manager.movies
     print("="*50)
     print("영화 목록")
     print("="*50)
     for idx, movie in enumerate(movie_list):
-        print(f"{idx+1}. {movie.title}")
+        print(f"{idx+1}. {movie.name}")
 
 # 리뷰 출력
-def show_review(review_list, title):
+def show_review(review_manager, movie, sort):
+    reviews = review_manager.do_review_retrieve(movie.movie_id, sort)
     print("="*50)
-    print(f"리뷰 목록 - {title}")
+    print(f"리뷰 목록 - {movie.movie_name}")
     print("="*50)
-    print(f"평균평점 : {ReviewManager.do_review_avg_rating(title)} / 5.0 (리뷰 {len(review_list)})")
+    print(f"평균평점 : {review_manager.do_review_avg_rating(movie.movie_id)} / 5.0 (리뷰 {len(reviews)})")
     print("-"*50)
-    for idx, review in enumerate(review_list):
+    for idx, review in enumerate(reviews):
         print(f"{idx+1}. {review.member_id} | {review.rating}점 | 추천 {""} | 비추천 {""}")
-        print(f"    {review.review}")
+        print(f"   {review.review}")
 
 
 # 회원 가입 선택 시
@@ -48,31 +60,80 @@ def show_main_menu(user):
     if user.role == "admin":
         print("4.회원조회")
     print("5. 종료")
-    menu = int(input())
-    return menu
 
 # 2. 리뷰 조회
-def view_review(): 
-    movie_list = MovieManager.do_movie_retrieve()
+def view_review(movie_manager, review_manager): 
     print("영화를 선택해 주세요")
-    show_movie_list(movie_list)
-    movie_idx = int(input("영화번호: "))
-    while movie_idx < 1 or movie_idx > len(movie_list):
-        print("다시 선택해 주세요.")
-        movie_idx = int(input("영화번호:"))
+    print("="*50)
+    show_movie_list(movie_manager)
+    movie_idx = input_int("영화번호: ", 1, len(movie_manager.movies))-1 
 
-    movie = movie_list[movie_idx-1]
+    movie_manager.movie = movie_manager.movies[movie_idx]
     
     print("리뷰 정렬 방법을 선택해 주세요")
     print("1. 최신    2. 평점")
-    sort = int(input("정렬 방법"))
-    while sort != 1 and sort != 2:
-        print("다시 선택해 주세요.")
-        sort = int(input("정렬 방법: "))
-    reviews = ReviewManager.do_review_retrieve(movie.movie_id, sort)
+    sort = input_int("정렬방법: ", 1, 2)
+    show_review(review_manager, movie_manager.movie, sort)
 
-    show_review(reviews, movie.movie_title)
+# 리뷰 작성
+def create_review(member_manager, movie_manager, review_manager):
+    is_exit = False
+    while not is_exit:
+        print("영화를 선택해 주세요")
+        print("="*50)
+        show_movie_list(movie_manager)
+        movie_idx = input_int("영화번호: ", 1, len(movie_manager.movies))-1 
+        movie_manager.movie = movie_manager.movies[movie_idx]
+        print("="*50)
+        print("리뷰 작성 -", movie_manager.movie.movie_name)
+        
+        while True:
+            while True:
+                try:
+                    rate = float(input("평점을 입력해주세요 (0-5): "))
+                    if 0<= rate <=5:
+                        break
+                    print("0~5 사이의 점수를 입력해주세요")
+                except ValueError:
+                    print("숫자를 입력해주세요")
+            while True:
+                content = input("리뷰를 작성해주세요: ").strip()
+                if not content:
+                    print("리뷰 내용을 입력해주세요")
+                    continue
+                if len(content) > 100:
+                    print("리뷰는 100자 이내로 작성해주세요")
+                    continue
+                break
+            while True:
+                recommand = input("추천 하시겠습니까? (y/n)").strip().lower()
+                if recommand == 'y' or recommand == 'n':
+                    break
+                print("y 또는 n을 입력해주세요")
+            
+            success = review_manager.do_review_save(member_manager.member.member_id, movie_manager.movie.movie_id, rate, content, recommand)
+            if not success:
+                print("실패했습니다")
+                print("1. 다시 작성    2. 종료")
+                choose = input_int("선택: ", 1, 2)
+                if choose == 1:
+                    continue
+                else:
+                    is_exit = True
+                    break
+            else:
+                break
 
+        while not is_exit:
+            write_more = input("추가 작성하시겠습니까? (y/n)").strip().lower()
+            if write_more not in ('y', 'n'):
+                print("y 또는 n을 입력해주세요")
+                continue
+            if write_more == 'n':
+                is_exit = True
+            break
+
+            
 
 # 4. 회원 조회 선택할 경우
 def member_info():
@@ -84,28 +145,29 @@ def find_movie():
 
 def main():
     # 시작 화면
-    is_login = False
-    while is_login == False:
+    member_manager = MemberManager()
+    movie_manager = MovieManager()
+    review_manager = ReviewManager()
+    
+    while member_manager.member is None:
         start = show_start_menu()
-        while start != 1 and start != 2:
-            print("다시선택")
-            start = show_start_menu()
 
         if start == 1: # 회원가입
             register()
 
         elif start == 2: # 로그인
-            is_login = login()
+            login()
     # 로그인 후
     menu = 0
     while(menu != 5):
-        menu = show_main_menu()
+        show_main_menu(member_manager.member)
+        menu = input_int("선택: ", 1, 5)
         if menu == 1:
             find_movie()
-        elif menu == 2: # 리뷰 조회
-            view_review()
+        elif menu == 2: # 영화 리뷰 조회
+            view_review(movie_manager, review_manager)
         elif menu == 3: # 리뷰 작성
-            pass
+            create_review(member_manager, movie_manager, review_manager)
         elif menu == 4:
             member_info()
 
