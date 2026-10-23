@@ -3,33 +3,35 @@ import json
 import re
 from pathlib import Path
 
+from models.member import Member
+
 
 class MemberManager:
-    def __init__(self):
+    def __init__(self) -> None:
         self.file_path = (
             Path(__file__).resolve().parent.parent / "data" / "members.json"
         )
         self.members = self.load_members()
 
     # members.json 파일에서 회원 정보 불러오기
-    def load_members(self):
-        with open(self.file_path, "r", encoding="utf-8") as file:
+    def load_members(self) -> list[dict[str, str]]:
+        with open(self.file_path, 'r', encoding='utf-8') as file:
             return json.load(file)
 
     # members.json 파일에 회원 정보 저장
-    def save_members(self):
+    def save_members(self) -> None:
         with open(self.file_path, 'w', encoding='utf-8') as file:
-            return json.dump(self.members, file, ensure_ascii=False, indent=4)
+            json.dump(self.members, file, ensure_ascii=False, indent=4)
 
     # 회원 정보 존재 여부 확인
-    def is_exist(self, user_id):
+    def is_exist(self, member_id: str) -> bool:
         for member in self.members:
-            if user_id == member['member_id']:
+            if member_id == member['member_id']:
                 return True
         return False
 
     # 회원 정보 유효성 검사
-    def is_valid_member(self, member):
+    def is_valid_member(self, member: Member) -> bool:
 
         # 자료형 검사: 모든 값이 str인지 확인
         if not all(
