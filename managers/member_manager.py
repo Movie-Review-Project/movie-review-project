@@ -91,6 +91,13 @@ class MemberManager:
 
         return self.members
 
+    def do_select_one(self, member_id: str) -> Member:
+        for member in self.members:
+            if member_id == member['member_id']:
+                return member
+        print('존재하는 회원이 없습니다.')
+        return None
+
 
 def main():
 
@@ -179,6 +186,10 @@ def main():
 
     print('\n=== 회원 정보 전체 조회 테스트 ===')
     print(manager.do_retrieve())
+
+    print('\n=== 회원 정보 상세 조회 테스트 ===')
+    print(f'user01: {manager.do_select_one("user01")}')
+    print(f'user99: {manager.do_select_one("user99")}')
 
 
 if __name__ == "__main__":
