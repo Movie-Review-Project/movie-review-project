@@ -85,6 +85,12 @@ class MemberManager:
 
         return True
 
+    def do_retrieve(self) -> list:
+        if not self.members:
+            print('존재하는 회원이 없습니다.')
+
+        return self.members
+
 
 def main():
 
@@ -170,6 +176,9 @@ def main():
     print(manager.add_member(member1))
     print(manager.add_member(member2))
     print(manager.add_member(member3))
+
+    print('\n=== 회원 정보 전체 조회 테스트 ===')
+    print(manager.do_retrieve())
 
 
 if __name__ == "__main__":
