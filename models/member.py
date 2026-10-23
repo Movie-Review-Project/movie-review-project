@@ -6,10 +6,10 @@ class Member:
     def __init__(
         self,
         member_id: str,
-        name: str,
-        password: str,
-        email: str,
-        phone: str,
+        name: str | None = None,
+        password: str | None = None,
+        email: str | None = None,
+        phone: str | None = None,
         role: str = 'USER',
     ) -> None:
         self.member_id = member_id
