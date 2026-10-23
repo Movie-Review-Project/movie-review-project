@@ -12,6 +12,26 @@ def show_start_menu():
     print()
     return start
 
+# 영화 목록 출력
+def show_movie_list(movie_list):
+    print("="*50)
+    print("영화 목록")
+    print("="*50)
+    for idx, movie in enumerate(movie_list):
+        print(f"{idx+1}. {movie.title}")
+
+# 리뷰 출력
+def show_review(review_list, title):
+    print("="*50)
+    print(f"리뷰 목록 - {title}")
+    print("="*50)
+    print(f"평균평점 : {ReviewManager.do_review_avg_rating(title)} / 5.0 (리뷰 {len(review_list)})")
+    print("-"*50)
+    for idx, review in enumerate(review_list):
+        print(f"{idx+1}. {review.member_id} | {review.rating}점 | 추천 {""} | 비추천 {""}")
+        print(f"    {review.review}")
+
+
 # 회원 가입 선택 시
 def register():
     pass
@@ -32,26 +52,26 @@ def show_main_menu(user):
     return menu
 
 # 2. 리뷰 조회
-def view_review()->Movie, int: 
-    print("영화를 선택해 주세요")
+def view_review(): 
     movie_list = MovieManager.do_movie_retrieve()
-    for idx, movie in enumerate(movie_list):
-        print(f"{idx+1}. {movie.title}")
-    movie_idx = int(input("영화번호:"))
+    print("영화를 선택해 주세요")
+    show_movie_list(movie_list)
+    movie_idx = int(input("영화번호: "))
     while movie_idx < 1 or movie_idx > len(movie_list):
         print("다시 선택해 주세요.")
         movie_idx = int(input("영화번호:"))
+
+    movie = movie_list[movie_idx-1]
     
-    print("정렬 방법을 선택해 주세요")
-    print("1. 평점    2. 최신")
+    print("리뷰 정렬 방법을 선택해 주세요")
+    print("1. 최신    2. 평점")
     sort = int(input("정렬 방법"))
     while sort != 1 and sort != 2:
         print("다시 선택해 주세요.")
-        sort = int(input("정렬 방법"))
+        sort = int(input("정렬 방법: "))
+    reviews = ReviewManager.do_review_retrieve(movie.movie_id, sort)
 
-    return movie_list[movie_idx-1], sort # 영화 객체 반환 
-        
-        
+    show_review(reviews, movie.movie_title)
 
 
 # 4. 회원 조회 선택할 경우
@@ -83,11 +103,9 @@ def main():
         if menu == 1:
             find_movie()
         elif menu == 2: # 리뷰 조회
-            movie, sort = view_review()
-            review_list = ReviewManager.do_review_retrieve(movie.movie_id, sort)
-            for idx, review in enumerate(review_list):
-                pass
-
+            view_review()
+        elif menu == 3: # 리뷰 작성
+            pass
         elif menu == 4:
             member_info()
 
