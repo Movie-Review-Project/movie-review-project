@@ -139,6 +139,17 @@ class MemberManager:
 
         return False
 
+    def do_delete(self, member_id: str) -> bool:
+        for member in self.members:
+            if member_id == member['member_id']:
+                self.members.remove(member)
+                self.save_members()
+                print('회원 삭제가 완료되었습니다.')
+                return True
+
+        print('회원 정보가 없습니다.')
+        return False
+
 
 def main():
 
@@ -238,6 +249,12 @@ def main():
 
     print(f'user01: {manager.do_update(update_member1)}')
     print(f'user99: {manager.do_update(update_member2)}')
+
+    print('\n=== 회원 정보 삭제 테스트 ===')
+    # 존재하는 회원 삭제
+    print(manager.do_delete('user01'))
+    # 존재하지 않는 회원 삭제
+    print(manager.do_delete('user99'))
 
 
 if __name__ == "__main__":
