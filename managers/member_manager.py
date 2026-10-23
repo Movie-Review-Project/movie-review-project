@@ -1,5 +1,6 @@
 # member_manager.py
 import json
+import re
 from pathlib import Path
 
 
@@ -26,6 +27,48 @@ class MemberManager:
             if user_id == member['member_id']:
                 return True
         return False
+
+    # 회원 정보 유효성 검사
+    def is_valid_member(self, member):
+
+        # 자료형 검사: 모든 값이 str인지 확인
+        if not all(
+            isinstance(value, str)
+            for value in [
+                member.member_id,
+                member.password,
+                member.email,
+                member.phone_number,
+            ]
+        ):
+            return False
+
+        # 유효성 검사
+        # 아이디: 영문 또는 숫자, 4~12자리
+        id_pattern = r"[a-zA-Z0-9]{4,12}"
+
+        # 비밀번호: 영문 + 숫자 필수, 8~10자리
+        password_pattern = r"(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]{8,10}"
+
+        # 이메일: 이메일 형식
+        email_pattern = r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
+
+        # 전화번호: 010으로 시작하는 11자리
+        phone_pattern = r"010[0-9]{8}"
+
+        if not re.fullmatch(id_pattern, member.member_id):
+            return False
+
+        if not re.fullmatch(password_pattern, member.password):
+            return False
+
+        if not re.fullmatch(email_pattern, member.email):
+            return False
+
+        if not re.fullmatch(phone_pattern, member.phone_number):
+            return False
+
+        return True
 
 
 def main():
