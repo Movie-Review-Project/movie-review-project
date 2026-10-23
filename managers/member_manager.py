@@ -31,32 +31,26 @@ class MemberManager:
         return False
 
     # 회원 정보 유효성 검사
-    def is_valid_member(self, member: Member) -> bool:
 
-        # 자료형 검사: 모든 값이 str인지 확인
-        if not all(
-            isinstance(value, str)
-            for value in [
-                member.member_id,
-                member.password,
-                member.email,
-                member.phone_number,
-            ]
-        ):
+    def is_valid_member(self, member: Member) -> bool:
+        # 자료형 및 빈 값 검사
+        values = [
+            member.member_id,
+            member.name,
+            member.password,
+            member.email,
+            member.phone,
+        ]
+
+        if not all(isinstance(value, str) and value.strip() for value in values):
             return False
 
-        # 유효성 검사
-        # 아이디: 영문 또는 숫자, 4~12자리
-        id_pattern = r"[a-zA-Z0-9]{4,12}"
+        # 정규표현식
+        id_pattern = r'[a-zA-Z0-9]{4,12}'
 
-        # 비밀번호: 영문 + 숫자 필수, 8~10자리
-        password_pattern = r"(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]{8,10}"
-
-        # 이메일: 이메일 형식
-        email_pattern = r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
-
-        # 전화번호: 010으로 시작하는 11자리
-        phone_pattern = r"010[0-9]{8}"
+        password_pattern = r'(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]{8,10}'
+        email_pattern = r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'
+        phone_pattern = r'010[0-9]{8}'
 
         if not re.fullmatch(id_pattern, member.member_id):
             return False
@@ -67,20 +61,86 @@ class MemberManager:
         if not re.fullmatch(email_pattern, member.email):
             return False
 
-        if not re.fullmatch(phone_pattern, member.phone_number):
+        if not re.fullmatch(phone_pattern, member.phone):
             return False
 
         return True
 
 
 def main():
-    # 파일 불러오기(load_members) 테스트
+
     manager = MemberManager()
-    print(manager.members[0])
+
+    # 파일 불러오기 테스트
+    print('=== 파일 불러오기 테스트 ===')
+    if manager.members:
+        print(manager.members[0])
 
     # 회원 정보 존재 여부 확인 테스트
+    print('\n=== 회원 존재 여부 테스트 ===')
     print(manager.is_exist('user01'))
     print(manager.is_exist('admin'))
+
+    # 회원 정보 유효성 검사 테스트
+    print('\n=== 회원 정보 유효성 검사 테스트 ===')
+
+    test_cases = [
+        (
+            '정상 회원',
+            Member('user01', '홍길동', 'abc12345', 'test@gmail.com', '01012345678'),
+            True,
+        ),
+        (
+            '아이디 길이 부족',
+            Member('abc', '홍길동', 'abc12345', 'test@gmail.com', '01012345678'),
+            False,
+        ),
+        (
+            '아이디 특수문자 포함',
+            Member('user!', '홍길동', 'abc12345', 'test@gmail.com', '01012345678'),
+            False,
+        ),
+        (
+            '이름 누락',
+            Member('user01', '', 'abc12345', 'test@gmail.com', '01012345678'),
+            False,
+        ),
+        (
+            '비밀번호 숫자 없음',
+            Member('user01', '홍길동', 'abcdefgh', 'test@gmail.com', '01012345678'),
+            False,
+        ),
+        (
+            '비밀번호 영문 없음',
+            Member('user01', '홍길동', '12345678', 'test@gmail.com', '01012345678'),
+            False,
+        ),
+        (
+            '비밀번호 길이 부족',
+            Member('user01', '홍길동', 'abc1234', 'test@gmail.com', '01012345678'),
+            False,
+        ),
+        (
+            '이메일 형식 오류',
+            Member('user01', '홍길동', 'abc12345', 'testgmail.com', '01012345678'),
+            False,
+        ),
+        (
+            '전화번호 형식 오류',
+            Member('user01', '홍길동', 'abc12345', 'test@gmail.com', '0101234567'),
+            False,
+        ),
+        (
+            '전화번호 자료형 오류',
+            Member('user01', '홍길동', 'abc12345', 'test@gmail.com', 1012345678),
+            False,
+        ),
+    ]
+
+    for name, member, expected in test_cases:
+        result = manager.is_valid_member(member)
+        status = 'PASS' if result == expected else 'FAIL'
+        print(f'[{status}] {name}: {result}')
 
 
 if __name__ == "__main__":
