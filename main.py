@@ -1,4 +1,8 @@
 # from managers.member_manager import add_member
+from managers.member_manager import MemberManager
+from managers.movie_manager import MovieManager
+from managers.review_manager import ReviewManager
+
 import json
 import os
 from datetime import datetime
@@ -49,14 +53,18 @@ dummy_db = {
     }
 }
 
-# 시작 화면
-def show_start_menu():
-    print("="*50)
-    print("(영화 리뷰 & 관람 기록 관리 시스템)")
-    start = input_int("선택: ", 1, 2)
-    print()
-    return start
-    
+# 정수 입력 (출력문구, min~max)
+def input_int(prompt, min_val, max_val):
+    while True:
+        try:
+            num = int(input(prompt))
+        except ValueError:
+            print("정수를 입력해주세요")
+            continue
+        if min_val <= num <= max_val:
+            return num
+        print(f"{min_val}~{max_val} 사이의 숫자를 입력해주세요")
+
 # 리뷰 내용 입력
 def input_review_info(allow_empty = False):
     while True:
@@ -94,6 +102,13 @@ def input_review_info(allow_empty = False):
 
     return rate, content, recommand
 
+# 시작 화면
+def show_start_menu():
+    print("="*50)
+    print("(영화 리뷰 & 관람 기록 관리 시스템)")
+    start = input_int("선택: ", 1, 2)
+    print()
+    return start
 
 # 영화 목록 출력
 def show_movie_list(movie_manager):
