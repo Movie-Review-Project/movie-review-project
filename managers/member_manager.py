@@ -83,7 +83,8 @@ class MemberManager:
             print('이미 존재하는 회원 ID입니다.')
             return False
 
-        self.members.append(vars(member).copy())
+        self.members.append(member.to_dict())
+
         self.save_members()
 
         return True
