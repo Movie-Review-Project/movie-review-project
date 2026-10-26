@@ -127,9 +127,8 @@ class MemberManager:
 
         # 입력한 항목만 유효성 검사
         for field, value in fields.items():
-            if value is not None:
-                if not self.is_valid_field(field, value):
-                    return False
+            if value is not None and not self.is_valid_field(field, value):
+                return False
 
         return True
 
