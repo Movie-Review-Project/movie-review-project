@@ -15,12 +15,22 @@ class MemberManager:
 
     # members.json 파일에서 회원 정보 불러오기
     def load_members(self) -> list[dict[str, str]]:
-        with open(self.file_path, 'r', encoding='utf-8') as file:
-            return json.load(file)
+        if not self.file_path.exists():
+            return []
+
+        with self.file_path.open('r', encoding='utf-8') as file:
+            data = json.load(file)
+
+        if not isinstance(data, list):
+            raise ValueError('회원 JSON 데이터는 리스트여야 합니다.')
+
+        return data
 
     # members.json 파일에 회원 정보 저장
     def save_members(self) -> None:
-        with open(self.file_path, 'w', encoding='utf-8') as file:
+        self.file_path.parent.mkdir(parents=True, exist_ok=True)
+
+        with self.file_path.open('w', encoding='utf-8') as file:
             json.dump(self.members, file, ensure_ascii=False, indent=4)
 
     # 회원 정보 존재 여부 확인
