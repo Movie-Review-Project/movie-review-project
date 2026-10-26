@@ -56,6 +56,44 @@ def show_start_menu():
     start = input_int("선택: ", 1, 2)
     print()
     return start
+    
+# 리뷰 내용 입력
+def input_review_info(allow_empty = False):
+    while True:
+        rate = input("평점을 입력해주세요 (0-5): ").strip()
+        if not rate and allow_empty:
+            rate = None
+            break
+        try:
+            rate = float(rate)
+            if 0<= rate <=5:
+                break
+            print("0~5 사이의 점수를 입력해주세요")
+        except ValueError:
+            print("숫자를 입력해주세요")
+    while True:
+        content = input("리뷰를 작성해주세요: ").strip()
+        if not content:
+            if allow_empty:
+                content = None
+                break
+            print("리뷰 내용을 입력해주세요")
+            continue
+        if len(content) > 100:
+            print("리뷰는 100자 이내로 작성해주세요")
+            continue
+        break
+    while True:
+        recommand = input("추천 하시겠습니까? (y/n)").strip().lower()
+        if not recommand and allow_empty:
+            recommand = None
+            break
+        if recommand == 'y' or recommand == 'n':
+            break
+        print("y 또는 n을 입력해주세요")
+
+    return rate, content, recommand
+
 
 # 영화 목록 출력
 def show_movie_list(movie_manager):
