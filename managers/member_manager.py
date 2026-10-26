@@ -189,3 +189,22 @@ class MemberManager:
 
         print('회원 정보가 없습니다.')
         return False
+
+    # 로그인
+    def login(self, member_id, password):
+        if (
+            not isinstance(member_id, str)
+            or not member_id.strip()
+            or not isinstance(password, str)
+            or not password.strip()
+        ):
+            print('아이디 혹은 비밀번호를 필수로 입력해주세요.')
+            return False
+
+        for member in self.members:
+            if member_id == member['member_id'] and password == member['password']:
+                print('로그인에 성공하였습니다.')
+                return True
+
+        print('아이디 혹은 비밀번호가 일치하지 않습니다.')
+        return False
