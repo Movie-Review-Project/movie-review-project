@@ -89,18 +89,54 @@ class MemberManager:
 
         return True
 
+    # 회원 전체 조회
     def do_retrieve(self) -> list[dict[str, str]]:
         if not self.members:
             print('존재하는 회원이 없습니다.')
 
         return self.members
 
-    def do_select_member_one(self, member_id: str) -> dict[str, str] | None:
-        for member in self.members:
-            if member_id == member['member_id']:
-                return member
-        print('존재하는 회원이 없습니다.')
-        return None
+    # 회원 검색
+    def do_search_members(
+        self,
+        field: str | None = None,
+        keyword: str | None = None,
+        sort_by: str | None = None,
+        descending: bool = False,
+    ) -> list[dict[str, str]]:
+
+        # 검색 및 정렬 조건 검사
+        if field not in ('member_id', 'name', 'email', 'phone', None):
+            return []
+
+        if sort_by not in ('name', 'reg_date', None):
+            return []
+
+        # 검색 조건과 검색어는 함께 입력해야 함
+        if (field is None) != (keyword is None):
+            return []
+
+        result = self.members.copy()
+
+        # 검색 조건이 있는 경우
+        if field is not None:
+            if not isinstance(keyword, str) or not keyword.strip():
+                return []
+
+            result = [
+                member
+                for member in result
+                if keyword.casefold() in member[field].casefold()
+            ]
+
+        # 정렬 조건이 있는 경우
+        if sort_by is not None:
+            result.sort(
+                key=lambda member: member[sort_by],
+                reverse=descending,
+            )
+
+        return result
 
     # 회원 수정 유효성 검사
     def is_valid_update_member(
