@@ -60,13 +60,16 @@ def show_start_menu():
     return start
 
 # 영화 목록 출력
-def show_movie_list(movie_manager):
-    movie_list = movie_manager.movies
+def show_movie_list(movie_list):
+    print("영화를 선택해 주세요")
     print("="*50)
     print("영화 목록")
     print("="*50)
     for idx, movie in enumerate(movie_list):
         print(f"{idx+1}. {movie.movie_name}")
+    movie_idx = input_int("영화번호: ", 1, len(movie_list))-1 
+    movie = movie_list[movie_idx]
+    return movie
 
 # 리뷰 출력
 def show_review(review_manager, movie, sort):
@@ -100,13 +103,23 @@ def show_main_menu(user):
 
 # 2. 리뷰 조회
 def view_review(movie_manager, review_manager): 
-    print("영화를 선택해 주세요")
-    print("="*50)
-    show_movie_list(movie_manager)
-    movie_idx = input_int("영화번호: ", 1, len(movie_manager.movies))-1 
+    print("검색할 영화 제목을 입력해주세요, 리스트를 보고싶으시면 enter를 눌러주세요")
+    keyword = input("검색할 영화 제목을 입력하세요: ").strip()
+    print()
+    movie = None
+    if not keyword:
+        movie = show_movie_list(movie_manager.movies)
+    else:    
+        right_movies = [
+            movie for movie in movie_manager.movies
+            if keyword in movie.movie_name
+        ]
+        if not right_movies:
+            print("일치하는 영화가 없습니다")
+            movie = show_movie_list(movie_manager.movies)
+        else:
+            movie = show_movie_list(right_movies)
 
-    movie = movie_manager.movies[movie_idx]
-    
     print("리뷰 정렬 방법을 선택해 주세요")
     print("1. 최신    2. 평점")
     sort = input_int("정렬방법: ", 1, 2)
@@ -116,11 +129,23 @@ def view_review(movie_manager, review_manager):
 def create_review(member_manager, movie_manager, review_manager):
     is_exit = False
     while not is_exit:
-        print("영화를 선택해 주세요")
-        print("="*50)
-        show_movie_list(movie_manager)
-        movie_idx = input_int("영화번호: ", 1, len(movie_manager.movies))-1 
-        movie = movie_manager.movies[movie_idx]
+        print("리뷰를 작성할 영화 제목을 입력해주세요, 리스트를 보고싶으시면 enter를 눌러주세요")
+        keyword = input("검색할 영화 제목을 입력하세요: ").strip()
+        print()
+        movie = None
+        if not keyword:
+            movie = show_movie_list(movie_manager.movies)
+        else:    
+            right_movies = [
+                movie for movie in movie_manager.movies
+                if keyword in movie.movie_name
+            ]
+            if not right_movies:
+                print("일치하는 영화가 없습니다")
+                movie = show_movie_list(movie_manager.movies)
+            else:
+                movie = show_movie_list(right_movies)
+        
         print("="*50)
         print("리뷰 작성 -", movie.movie_name)
         
@@ -137,6 +162,7 @@ def create_review(member_manager, movie_manager, review_manager):
                     is_exit = True
                     break
             else:
+                print("리뷰 작성을 성공했습니다")
                 break
 
         while not is_exit:
