@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 from managers.member_manager import MemberManager
 from managers.movie_manager import MovieManager
 from managers.review_manager import ReviewManager
@@ -67,7 +66,6 @@ def show_movie_list(movie_manager):
     print("영화 목록")
     print("="*50)
     for idx, movie in enumerate(movie_list):
-        print(f"{idx+1}. {movie.name}")
         print(f"{idx+1}. {movie.movie_name}")
 
 # 리뷰 출력
@@ -76,14 +74,12 @@ def show_review(review_manager, movie, sort):
     print("="*50)
     print(f"리뷰 목록 - {movie.movie_name}")
     print("="*50)
-    print(f"평균평점 : {review_manager.do_review_avg_rating(movie.movie_id)} / 5.0 (리뷰 {len(reviews)})")
     print(f"평균평점 : {review_manager.do_review_avg_rating(movie.movie_id)} / 5.0 (리뷰 {len(reviews)}개)")
     print("-"*50)
     for idx, review in enumerate(reviews):
         print(f"{idx+1}. {review.member_id} | {review.rating}점 | {'추천' if review.recommand == 'y' else '비추천'}")
         print(f"   {review.review}")
 
-<<<<<<< Updated upstream
 
 # 회원 가입 선택 시
 def register():
@@ -95,19 +91,10 @@ def login() -> bool:
 
 # 로그인 후
 def show_main_menu(user):
-=======
-# 로그인 후
-def show_main_menu(member_manager):
-    user = member_manager.member
-    print("="*50)
-    print(f"{user.name}님 안녕하세요.")
->>>>>>> Stashed changes
     print("1. 영화검색")
     print("2. 영화 리뷰조회")
     print("3. 리뷰작성")
     print("4. 내 리뷰 조회 및 수정")
-    if user.role == "admin":
-        print("5.회원조회")
     print("5. 회원조회")
     print("6. 종료")
 
@@ -118,13 +105,11 @@ def view_review(movie_manager, review_manager):
     show_movie_list(movie_manager)
     movie_idx = input_int("영화번호: ", 1, len(movie_manager.movies))-1 
 
-    movie_manager.movie = movie_manager.movies[movie_idx]
     movie = movie_manager.movies[movie_idx]
     
     print("리뷰 정렬 방법을 선택해 주세요")
     print("1. 최신    2. 평점")
     sort = input_int("정렬방법: ", 1, 2)
-    show_review(review_manager, movie_manager.movie, sort)
     show_review(review_manager, movie, sort)
 
 # 3. 리뷰 작성
@@ -135,15 +120,12 @@ def create_review(member_manager, movie_manager, review_manager):
         print("="*50)
         show_movie_list(movie_manager)
         movie_idx = input_int("영화번호: ", 1, len(movie_manager.movies))-1 
-        movie_manager.movie = movie_manager.movies[movie_idx]
         movie = movie_manager.movies[movie_idx]
         print("="*50)
-        print("리뷰 작성 -", movie_manager.movie.movie_name)
         print("리뷰 작성 -", movie.movie_name)
         
         while True:
             rate, content, recommand = input_review_info()
-            success = review_manager.do_review_save(member_manager.member.member_id, movie_manager.movie.movie_id, rate, content, recommand)
             success = review_manager.do_review_save(member_manager.member.member_id, movie.movie_id, rate, content, recommand)
             if not success:
                 print("실패했습니다")
@@ -167,12 +149,10 @@ def create_review(member_manager, movie_manager, review_manager):
             break
 
 # 내 리뷰 조회 및 수정
-def update_review(member_manager, review_manager):
 def update_review(member_manager, review_manager, movie_manager):
     while True:
         reviews = review_manager.do_personal_review_retrieve(member_manager.member.member_id)
         for idx, review in enumerate(reviews):
-            print(f"{idx+1}. {review.show_info()}")
             print(f"{idx+1}. {movie_manager.id_to_title(review.movie_id)} | {review.rating} | 관람 {review.reg_date} | {"추천" if review.recommand == 'y' else "비추천"}")
             print(review.review)
         print("리뷰 번호와 (수정/삭제)를 선택해 주세요")
@@ -201,13 +181,10 @@ def update_review(member_manager, review_manager, movie_manager):
 def member_info():
     pass
 
-<<<<<<< Updated upstream
 # 영화 검색 선택할 경우
 def find_movie():
     pass
 
-=======
->>>>>>> Stashed changes
 def main():
     # 시작 화면
     member_manager = MemberManager()
@@ -219,20 +196,14 @@ def main():
 
         if start == 1: # 회원가입
             register()
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
         elif start == 2: # 로그인
             login()
     # 로그인 후
     menu = 0
     while(menu != 6):
-        show_main_menu(member_manager.member)
         show_main_menu(member_manager)
         menu = input_int("선택: ", 1, 6)
         if menu == 1:
-            find_movie()
             # find_movie()
             pass
         elif menu == 2: # 영화 리뷰 조회
@@ -240,7 +211,6 @@ def main():
         elif menu == 3: # 리뷰 작성
             create_review(member_manager, movie_manager, review_manager)
         elif menu == 4: # 리뷰 수정
-            update_review(member_manager, review_manager)
             update_review(member_manager, review_manager, movie_manager)
         elif menu == 5:
             if member_manager.member.role != "admin":
