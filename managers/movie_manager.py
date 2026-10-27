@@ -21,6 +21,7 @@ class MovieManager:
         # 영화 목록 로드
         self.load_json()
 
+    # JSON 파일 불러오기
     def load_json(self)->None:
         """JSON 파일에서 회원정보를 읽어옵니다."""
         if not self.file_path.exists():
@@ -38,6 +39,7 @@ class MovieManager:
             Movie.from_dict(item) for item in data
         ]
 
+    # JSON에 저장
     def save_json(self) -> None:
         """JSON 파일로 저장"""
 
@@ -60,6 +62,7 @@ class MovieManager:
                 indent=4
             )
 
+    # 영화 단건 검색
     def search_movie(self,movie_name:str) -> dict|None:
         """영화 제목으로 검색"""
         for film in self.movies:
@@ -69,15 +72,18 @@ class MovieManager:
 
         return None
 
+    # 영화 전체 조회
     def do_retrieve_movie(self) -> list[Movie]:
         """전체 영화 목록을 반환합니다"""
         return self.movies.copy()
 
+    # 개봉일 기준 최신순 정렬
     def date_sort_movies(self) -> list[dict,dict]:
         """개봉일 최신순 정렬"""
         self.movies.sort(key=lambda movie: movie["movie_release"], reverse=True)
         return self.movies
 
+    # 영화 추가 
     def do_add_movie(self,movie:Movie) -> int:
         """영화 추가"""
         # 기존 영화 중복 방지
@@ -95,6 +101,7 @@ class MovieManager:
 
         return 1
 
+    # 영화 삭제
     def do_delete_movie(self,movie_name:str) -> bool:
         """영화 이름으로 영화 삭제"""
         movie = self.search_movie(movie_name)
@@ -112,6 +119,7 @@ class MovieManager:
 
         return True
 
+    # 영화 수정
     def do_update_movie(self,mod_movie:Movie) -> int:
         """영화 정보 수정"""
 
@@ -128,6 +136,7 @@ class MovieManager:
 
         return 0
 
+    # ID를 영화 제목으로 변환
     def id_to_name(self,movie_id:str) -> str:
         """영화 ID를 넣으면 영화 제목으로 반환"""
         for movie in self.movies:
