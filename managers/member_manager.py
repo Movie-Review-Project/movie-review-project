@@ -11,10 +11,11 @@ class MemberManager:
         self.file_path = (
             Path(__file__).resolve().parent.parent / "data" / "members.json"
         )
-        self.members = self.load_members()
+        self.members: list[Member] = self.load_members()
+        self.member: Member | None = None
 
     # members.json 파일에서 회원 정보 불러오기
-    def load_members(self) -> list[dict[str, str]]:
+    def load_members(self) -> list[Member]:
         """members.json 파일에서 회원 정보 불러오기"""
 
         if not self.file_path.exists():
@@ -26,7 +27,7 @@ class MemberManager:
         if not isinstance(data, list):
             raise ValueError('회원 JSON 데이터는 리스트여야 합니다.')
 
-        return data
+        return [Member(**item) for item in data]
 
     # members.json 파일에 회원 정보 저장
     def save_members(self) -> None:
@@ -35,14 +36,19 @@ class MemberManager:
         self.file_path.parent.mkdir(parents=True, exist_ok=True)
 
         with self.file_path.open('w', encoding='utf-8') as file:
-            json.dump(self.members, file, ensure_ascii=False, indent=4)
+            json.dump(
+                [member.to_dict() for member in self.members],
+                file,
+                ensure_ascii=False,
+                indent=4,
+            )
 
     # 회원 정보 존재 여부 확인
     def is_exist(self, member_id: str) -> bool:
         """회원ID로 존재 여부 확인"""
 
         for member in self.members:
-            if member_id == member['member_id']:
+            if member_id == member.member_id:
                 return True
         return False
 
@@ -105,7 +111,7 @@ class MemberManager:
             print('이미 존재하는 회원 ID입니다.')
             return False
 
-        self.members.append(member.to_dict())
+        self.members.append(member)
 
         try:
             self.save_members()
@@ -117,11 +123,13 @@ class MemberManager:
         return True
 
     # 회원 전체 조회
-    def do_retrieve(self) -> list[dict[str, str]]:
+    def do_retrieve(self) -> list[Member]:
+        """전체 회원 조회"""
+
         if not self.members:
             print('존재하는 회원이 없습니다.')
 
-        return self.members
+        return self.members.copy()
 
     # 회원 검색
     def do_search_members(
@@ -130,7 +138,7 @@ class MemberManager:
         keyword: str | None = None,
         sort_by: str | None = None,
         descending: bool = False,
-    ) -> list[dict[str, str]]:
+    ) -> list[Member]:
         """회원 검색 기능"""
 
         # 검색 및 정렬 조건 검사
@@ -154,13 +162,13 @@ class MemberManager:
             result = [
                 member
                 for member in result
-                if keyword.casefold() in member[field].casefold()
+                if keyword.casefold() in getattr(member, field).casefold()
             ]
 
         # 정렬 조건이 있는 경우
         if sort_by is not None:
             result.sort(
-                key=lambda member: member[sort_by],
+                key=lambda member: getattr(member, sort_by),
                 reverse=descending,
             )
 
@@ -216,22 +224,24 @@ class MemberManager:
             return False
 
         for index, current_member in enumerate(self.members):
-            if member_id == current_member['member_id']:
-                # 기존 회원 정보 복사
-                member = current_member.copy()
+            if member_id == current_member.member_id:
+                # 기존 회원 정보를 딕셔너리로 복사
+                member_data = current_member.to_dict()
 
                 if name is not None:
-                    member['name'] = name
+                    member_data['name'] = name
 
                 if password is not None:
-                    member['password'] = password
+                    member_data['password'] = password
 
                 if email is not None:
-                    member['email'] = email
+                    member_data['email'] = email
 
                 if phone is not None:
-                    member['phone'] = phone
+                    member_data['phone'] = phone
 
+                # 수정된 회원 객체로 교체
+                member = Member(**member_data)
                 self.members[index] = member
 
                 try:
@@ -240,6 +250,10 @@ class MemberManager:
                     self.members[index] = current_member
                     print('회원 정보 수정 중 오류 발생:', e)
                     return False
+
+                # 로그인한 회원의 정보라면 갱신
+                if self.member is current_member:
+                    self.member = member
 
                 print('회원 정보가 수정되었습니다.')
                 return True
@@ -253,7 +267,7 @@ class MemberManager:
 
         # 관리자 권한 확인
         is_admin = any(
-            member['member_id'] == admin_id and member['role'] == 'ADMIN'
+            member.member_id == admin_id and member.role == 'ADMIN'
             for member in self.members
         )
 
@@ -263,7 +277,7 @@ class MemberManager:
 
         # 회원 삭제
         for index, member in enumerate(self.members):
-            if member_id == member['member_id']:
+            if member_id == member.member_id:
                 self.members.pop(index)
 
                 try:
@@ -273,6 +287,10 @@ class MemberManager:
                     print('회원 삭제 중 오류 발생:', e)
                     return False
 
+                # 현재 로그인한 회원이 삭제된 경우
+                if self.member is member:
+                    self.member = None
+
                 print('회원 삭제가 완료되었습니다.')
                 return True
 
@@ -280,8 +298,10 @@ class MemberManager:
         return False
 
     # 로그인
-    def login(self, member_id, password):
+    def login(self, member_id: str, password: str) -> bool:
         """로그인 기능"""
+
+        self.member = None
 
         if (
             not isinstance(member_id, str)
@@ -293,7 +313,8 @@ class MemberManager:
             return False
 
         for member in self.members:
-            if member_id == member['member_id'] and password == member['password']:
+            if member_id == member.member_id and password == member.password:
+                self.member = member
                 print('로그인에 성공하였습니다.')
                 return True
 
