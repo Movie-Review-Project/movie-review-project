@@ -95,7 +95,12 @@ class MemberManager:
 
         self.members.append(member.to_dict())
 
-        self.save_members()
+        try:
+            self.save_members()
+        except Exception as e:
+            self.members.pop()
+            print('회원 정보 저장 중 오류 발생:', e)
+            return False
 
         return True
 
@@ -193,8 +198,11 @@ class MemberManager:
             print('수정할 회원 정보를 확인해주세요.')
             return False
 
-        for member in self.members:
-            if member_id == member['member_id']:
+        for index, current_member in enumerate(self.members):
+            if member_id == current_member['member_id']:
+                # 기존 회원 정보 복사
+                member = current_member.copy()
+
                 if name is not None:
                     member['name'] = name
 
@@ -207,7 +215,15 @@ class MemberManager:
                 if phone is not None:
                     member['phone'] = phone
 
-                self.save_members()
+                self.members[index] = member
+
+                try:
+                    self.save_members()
+                except Exception as e:
+                    self.members[index] = current_member
+                    print('회원 정보 수정 중 오류 발생:', e)
+                    return False
+
                 print('회원 정보가 수정되었습니다.')
                 return True
 
@@ -227,10 +243,17 @@ class MemberManager:
             return False
 
         # 회원 삭제
-        for member in self.members:
+        for index, member in enumerate(self.members):
             if member_id == member['member_id']:
-                self.members.remove(member)
-                self.save_members()
+                self.members.pop(index)
+
+                try:
+                    self.save_members()
+                except Exception as e:
+                    self.members.insert(index, member)
+                    print('회원 삭제 중 오류 발생:', e)
+                    return False
+
                 print('회원 삭제가 완료되었습니다.')
                 return True
 
