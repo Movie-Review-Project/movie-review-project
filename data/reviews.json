@@ -1,0 +1,47 @@
+[
+    {
+        "review_id": 1,
+        "member_id": 1,
+        "movie_id": "10001",
+        "recommend": true,
+        "rating": 5.0,
+        "review": "볼 때마다 새로운 장면이 보인다",
+        "reg_date": "2026-10-01"
+    },
+    {
+        "review_id": 2,
+        "member_id": 2,
+        "movie_id": "10001",
+        "recommend": true,
+        "rating": 4.5,
+        "review": "계단 연출이 계속 생각난다",
+        "reg_date": "2026-10-03"
+    },
+    {
+        "review_id": 3,
+        "member_id": 3,
+        "movie_id": "10001",
+        "recommend": false,
+        "rating": 3.0,
+        "review": "후반 전개가 호불호 갈릴 듯",
+        "reg_date": "2026-10-05"
+    },
+    {
+        "review_id": 4,
+        "member_id": 1,
+        "movie_id": "10002",
+        "recommend": true,
+        "rating": 4.0,
+        "review": "결말이 충격적이네",
+        "reg_date": "2026-10-07"
+    },
+    {
+        "review_id": 5,
+        "member_id": 2,
+        "movie_id": "10002",
+        "recommend": false,
+        "rating": 2.5,
+        "review": "러닝타임이 좀 길다",
+        "reg_date": "2026-10-10"
+    }
+]
