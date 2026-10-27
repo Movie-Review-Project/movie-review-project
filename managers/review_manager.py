@@ -67,37 +67,61 @@ class ReviewManager:
 
     # [내부용] 저장·수정 전 값 검사 (화면에서 1차 검사해도 데이터 보호용으로 한 번 더)
     def _is_valid(self, review: Review) -> bool:
-        # 평점: 1.0 ~ 5.0
-        if not (1.0 <= review.rating <= 5.0):
+        # 평점: 숫자이고 1.0 ~ 5.0
+        if not isinstance(review.rating, (int, float)) or not (1.0 <= review.rating <= 5.0):
             return False
-        # 리뷰 내용: 빈 값 불가
-        if review.review.strip() == "":
+        # 리뷰 내용: 문자열이고 빈 값 불가
+        if not isinstance(review.review, str) or review.review.strip() == "":
             return False
-        # 관람 날짜: 형식이 맞아야 하고, 미래 날짜 불가
-        watch_text = self._to_date_text(review.watch_date)
-        if watch_text is None:
-            return False
-        if watch_text > date.today().isoformat():
-            return False
+        # 관람 날짜: 선택 항목 → 없으면 통과, 있으면 형식·미래 날짜 검사
+        if review.watch_date is not None:
+            watch_text = self._to_date_text(review.watch_date)
+            if watch_text is None or watch_text > date.today().isoformat():
+                return False
         return True
 
-    # [리뷰 작성] 새 리뷰 저장 → 성공 True / 실패 False
-    # review_id, reg_date는 여기서 자동으로 채움 (호출하는 쪽은 None으로 넘기면 됨)
-    def do_review_save(self, review: Review) -> bool:
-        if not self._is_valid(review):
+    # [리뷰 작성] 값을 받아 새 리뷰를 만들어 저장 → 성공 True / 실패 False
+    # 호출 형식: do_review_save(회원ID, 영화ID, 평점, 리뷰내용, 추천여부)
+    # watch_date(관람 날짜)는 선택. 안 넘기면 None으로 저장
+    # review_id, reg_date는 여기서 자동 생성
+    def do_review_save(
+        self,
+        member_id: int,
+        movie_id: str,
+        rating: float,
+        review_text: str,
+        recommend: bool,
+        watch_date: str | None = None,
+    ) -> bool:
+        # 평점이 input()으로 받은 "4.5" 같은 문자열이어도 숫자로 변환 (변환 불가면 실패)
+        try:
+            rating = float(rating)
+        except (TypeError, ValueError):
             return False
-        # movie_id는 항상 str로 저장 (int로 넘어와도 JSON에 섞이지 않게)
-        review.movie_id = str(review.movie_id)
-        # 관람 날짜를 YYYY-MM-DD로 통일
-        review.watch_date = self._to_date_text(review.watch_date)
+        # 넘겨받은 값으로 Review 객체 생성 (ID·작성일은 아래에서 채움)
+        new_review = Review(
+            None,
+            member_id,
+            str(movie_id),   # movie_id는 항상 str로 저장
+            recommend,
+            rating,
+            review_text,
+            watch_date,
+            None,
+        )
+        if not self._is_valid(new_review):
+            return False
+        # 관람 날짜가 있으면 YYYY-MM-DD로 통일
+        if watch_date is not None:
+            new_review.watch_date = self._to_date_text(watch_date)
         # 새 ID = 기존 최대 ID + 1 (리뷰가 하나도 없으면 1)
-        review.review_id = max(self.reviews.keys(), default=0) + 1
+        new_review.review_id = max(self.reviews.keys(), default=0) + 1
         # 작성 일자 = 오늘 (YYYY-MM-DD → 작성일 정렬이 문자열 비교로 정확히 동작)
-        review.reg_date = date.today().isoformat()
-        self.reviews[review.review_id] = review
+        new_review.reg_date = date.today().isoformat()
+        self.reviews[new_review.review_id] = new_review
         # 파일 저장 실패 시 방금 넣은 리뷰를 다시 빼서 메모리와 파일 상태를 맞춤
         if not self._save_reviews():
-            del self.reviews[review.review_id]
+            del self.reviews[new_review.review_id]
             return False
         return True
 
