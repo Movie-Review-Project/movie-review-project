@@ -5,7 +5,7 @@ class Review:
             review_id: int,
             member_id: int,
             movie_id: str,
-            recommend: bool,
+            recommend: str,
             rating: float,
             review: str,
             watch_date: str,
@@ -14,7 +14,7 @@ class Review:
         self.review_id = review_id
         self.member_id = member_id
         self.movie_id = movie_id
-        self.recommend = recommend
+        self.recommend = recommend      # 'y'=추천 / 'n'=비추천
         self.rating = rating
         self.review = review
         self.watch_date = watch_date
@@ -25,10 +25,10 @@ class Review:
     def show_info(self, index: int, movie_name: str) -> None:
         # 평점 표시: 5.0 → "5", 4.5 → "4.5" (불필요한 .0 제거)
         rating_text = f"{self.rating:g}"
-        # 관람 날짜가 없는 예전 데이터 대비
+        # 관람 날짜가 없는 데이터 대비
         watch_text = self.watch_date if self.watch_date else "-"
-        # True → "추천", False → "비추천"
-        recommend_text = "추천" if self.recommend else "비추천"
+        # 'y' → "추천", 'n' → "비추천" (예전 True/False 데이터도 처리)
+        recommend_text = "추천" if self.recommend in ("y", True) else "비추천"
 
         print(f"{index}. {movie_name} | {rating_text}점 | 관람 {watch_text}")
         print(f"   {recommend_text}")
