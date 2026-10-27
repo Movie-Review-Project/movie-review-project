@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import date
+from datetime import date, datetime
 
 from models.review import Review
 
@@ -10,7 +10,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REVIEW_FILE = os.path.join(BASE_DIR, "data", "reviews.json")
 
 
-# 리뷰 여러 개를 저장·조회·수정·삭제하는 "기능" 담당
+# 리뷰 여러 개를 저장·조회·수정·삭제하는 "기능" 담당 (화면 출력 없음, 데이터만 반환)
 class ReviewManager:
     # 매니저 생성 시 실행: 리뷰 저장소 준비 후 파일에서 불러옴
     def __init__(self):
@@ -57,6 +57,14 @@ class ReviewManager:
     def _get_reviews_by_movie(self, movie_id: str) -> list[Review]:
         return [r for r in self.reviews.values() if str(r.movie_id) == str(movie_id)]
 
+    # [내부용] 날짜 문자열 → "YYYY-MM-DD"로 통일 (형식이 틀리거나 None이면 None)
+    # 예: "2026-1-5" → "2026-01-05", "2026-13-01" → None
+    def _to_date_text(self, text: str | None) -> str | None:
+        try:
+            return datetime.strptime(text, "%Y-%m-%d").date().isoformat()
+        except (TypeError, ValueError):
+            return None
+
     # [내부용] 저장·수정 전 값 검사 (화면에서 1차 검사해도 데이터 보호용으로 한 번 더)
     def _is_valid(self, review: Review) -> bool:
         # 평점: 1.0 ~ 5.0
@@ -64,6 +72,12 @@ class ReviewManager:
             return False
         # 리뷰 내용: 빈 값 불가
         if review.review.strip() == "":
+            return False
+        # 관람 날짜: 형식이 맞아야 하고, 미래 날짜 불가
+        watch_text = self._to_date_text(review.watch_date)
+        if watch_text is None:
+            return False
+        if watch_text > date.today().isoformat():
             return False
         return True
 
@@ -74,6 +88,8 @@ class ReviewManager:
             return False
         # movie_id는 항상 str로 저장 (int로 넘어와도 JSON에 섞이지 않게)
         review.movie_id = str(review.movie_id)
+        # 관람 날짜를 YYYY-MM-DD로 통일
+        review.watch_date = self._to_date_text(review.watch_date)
         # 새 ID = 기존 최대 ID + 1 (리뷰가 하나도 없으면 1)
         review.review_id = max(self.reviews.keys(), default=0) + 1
         # 작성 일자 = 오늘 (YYYY-MM-DD → 작성일 정렬이 문자열 비교로 정확히 동작)
@@ -92,7 +108,7 @@ class ReviewManager:
         return sorted(my_reviews, key=lambda r: (r.reg_date, r.review_id), reverse=True)
 
     # [리뷰 수정] review_id가 같은 기존 리뷰의 내용을 교체 → 성공 여부 반환
-    # 수정 가능: recommend, rating, review / 유지: member_id, movie_id, reg_date
+    # 수정 가능: recommend, rating, review, watch_date / 유지: member_id, movie_id, reg_date
     def do_personal_review_update(self, review: Review) -> bool:
         original = self.reviews.get(review.review_id)
         # 없는 리뷰
@@ -104,13 +120,14 @@ class ReviewManager:
         if not self._is_valid(review):
             return False
         # 저장 실패 대비 기존 값 보관
-        backup = (original.recommend, original.rating, original.review)
+        backup = (original.recommend, original.rating, original.review, original.watch_date)
         original.recommend = review.recommend
         original.rating = review.rating
         original.review = review.review
+        original.watch_date = self._to_date_text(review.watch_date)
         # 파일 저장 실패 시 원래 값으로 되돌림
         if not self._save_reviews():
-            original.recommend, original.rating, original.review = backup
+            original.recommend, original.rating, original.review, original.watch_date = backup
             return False
         return True
 

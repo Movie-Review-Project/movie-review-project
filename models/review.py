@@ -8,6 +8,7 @@ class Review:
             recommend: bool,
             rating: float,
             review: str,
+            watch_date: str,
             reg_date: str,
     ):
         self.review_id = review_id
@@ -16,6 +17,7 @@ class Review:
         self.recommend = recommend
         self.rating = rating
         self.review = review
+        self.watch_date = watch_date
         self.reg_date = reg_date
 
     def to_dict(self) -> dict:
@@ -26,6 +28,7 @@ class Review:
             "recommend": self.recommend,
             "rating": self.rating,
             "review": self.review,
+            "watch_date": self.watch_date,
             "reg_date": self.reg_date
         }
 
@@ -38,5 +41,6 @@ class Review:
             data["recommend"],
             data["rating"],
             data["review"],
+            data.get("watch_date"),  # 예전 데이터에 없어도 에러 없이 None
             data["reg_date"]
         )

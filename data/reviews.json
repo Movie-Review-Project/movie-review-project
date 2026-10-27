@@ -6,6 +6,7 @@
         "recommend": true,
         "rating": 5.0,
         "review": "볼 때마다 새로운 장면이 보인다",
+        "watch_date": "2026-09-30",
         "reg_date": "2026-10-01"
     },
     {
@@ -15,6 +16,7 @@
         "recommend": true,
         "rating": 4.5,
         "review": "계단 연출이 계속 생각난다",
+        "watch_date": "2026-10-02",
         "reg_date": "2026-10-03"
     },
     {
@@ -24,6 +26,7 @@
         "recommend": false,
         "rating": 3.0,
         "review": "후반 전개가 호불호 갈릴 듯",
+        "watch_date": "2026-10-04",
         "reg_date": "2026-10-05"
     },
     {
@@ -33,6 +36,7 @@
         "recommend": true,
         "rating": 4.0,
         "review": "결말이 충격적이네",
+        "watch_date": "2026-08-10",
         "reg_date": "2026-10-07"
     },
     {
@@ -42,6 +46,7 @@
         "recommend": false,
         "rating": 2.5,
         "review": "러닝타임이 좀 길다",
+        "watch_date": "2026-09-01",
         "reg_date": "2026-10-10"
     }
 ]
