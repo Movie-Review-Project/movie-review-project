@@ -55,6 +55,7 @@ def input_review_info(allow_empty = False):
 def show_start_menu():
     print("="*50)
     print("(영화 리뷰 & 관람 기록 관리 시스템)")
+    print("1. 회원가입   2. 로그인")
     start = input_int("선택: ", 1, 2)
     print()
     return start
