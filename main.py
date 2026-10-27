@@ -131,9 +131,9 @@ def login(member_manager):
     return None
 
 # 로그인 후
-def show_main_menu(user):
+def show_main_menu(member_manager):
     print("="*50)
-    print(f"{user["name"]}님 안녕하세요.")
+    print(f"{member_manager.member.name}님 안녕하세요.")
     print("1. 영화검색")
     print("2. 영화 리뷰조회")
     print("3. 리뷰작성")
@@ -223,7 +223,7 @@ def update_review(member_manager, review_manager, movie_manager):
             
 
 # 4. 회원 조회 선택할 경우
-def member_info(member_manager, admin_id):
+def member_info(member_manager):
 
     members = member_manager.do_retrieve()
 
@@ -397,7 +397,7 @@ def find_movie(movie_manager, review_manager):
         else:
             for idx, review in enumerate(top_reviews):
                 print(f"{idx + 1}. {review.member_id} | {review.rating}점")
-                print(f" {review.content}")
+                print(f" {review.review}")
                 print("="*50)
 
         print("="*50)
@@ -409,7 +409,9 @@ def main():
     member_manager = MemberManager()
     movie_manager = MovieManager()
     review_manager = ReviewManager()
+
     member_manager.member = member_manager.members[1]
+    
     while member_manager.member is None:
         start = show_start_menu()
 
@@ -424,8 +426,8 @@ def main():
         menu = input_int("선택: ", 1, 6)
         print("="*50)
         if menu == 1:
-            # find_movie()
-            pass
+            find_movie(movie_manager, review_manager)
+
         elif menu == 2: # 영화 리뷰 조회
             view_review(movie_manager, review_manager)
 
@@ -438,36 +440,8 @@ def main():
                 print("회원 조회는 관리자만 할 수 있습니다")
                 continue
 
-            member_info(member_manager, user["member_id"])
+            member_info(member_manager)
 
-    # while member_manager.member is None:
-    #     start = show_start_menu()
-
-    #     if start == 1: # 회원가입
-    #         is_login = register()
-
-    #     elif start == 2: # 로그인
-    #         login()
-
-    # # 로그인 후
-    # menu = 0
-    # while(menu != 6):
-    #     show_main_menu(member_manager.member)
-    #     menu = input_int("선택: ", 1, 6)
-    #     if menu == 1:
-    #         find_movie()
-    #     elif menu == 2: # 영화 리뷰 조회
-    #         view_review(movie_manager, review_manager)
-    #     elif menu == 3: # 리뷰 작성
-    #         create_review(member_manager, movie_manager, review_manager)
-    #     elif menu == 4: # 리뷰 수정
-    #         update_review(member_manager, review_manager)
-    #     elif menu == 5:
-    #         if member_manager.member.role != "admin":
-    #             print("회원 조회는 관리자만 할 수 있습니다")
-    #             continue
-
-    #         member_info()
 
 
 

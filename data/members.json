@@ -2,20 +2,29 @@
     {
         "member_id": "hong1234",
         "name": "홍길동",
-        "password": "qwer1234!",
+        "password": "qwer1234",
         "email": "hong@example.com",
-        "phone": "010-0000-0000",
-        "reg_date": "2026-10-22",
+        "phone": "01012340001",
+        "reg_date": "2026-01-05",
         "role": "USER"
     },
     {
         "member_id": "admin",
         "name": "관리자",
-        "password": "qwer1234!",
+        "password": "admin1234",
         "email": "admin@test.com",
-        "phone": "010-0000-0000",
-        "reg_date": "2026-10-22",
+        "phone": "01000000000",
+        "reg_date": "2026-01-01",
         "role": "ADMIN"
+    },
+    {
+        "member_id": "user01",
+        "name": "최지은",
+        "password": "Test1234",
+        "email": "jieun@gmail.com",
+        "phone": "01055556666",
+        "reg_date": "2026-01-10",
+        "role": "USER"
     },
     {
         "member_id": "user02",
@@ -23,7 +32,7 @@
         "password": "abc12345",
         "email": "test3@gmail.com",
         "phone": "01012345678",
-        "reg_date": "2026-10-23",
+        "reg_date": "2026-02-14",
         "role": "USER"
     },
     {
@@ -32,7 +41,7 @@
         "password": "Test1234",
         "email": "kimchul@naver.com",
         "phone": "01011112222",
-        "reg_date": "2026-10-24",
+        "reg_date": "2026-03-02",
         "role": "USER"
     },
     {
@@ -41,7 +50,7 @@
         "password": "Test1234",
         "email": "minsu@gmail.com",
         "phone": "01033334444",
-        "reg_date": "2026-10-25",
+        "reg_date": "2026-04-18",
         "role": "USER"
     },
     {
@@ -50,7 +59,16 @@
         "password": "Test1234",
         "email": "lee@gmail.com",
         "phone": "01022223333",
-        "reg_date": "2026-10-26",
+        "reg_date": "2026-06-30",
+        "role": "USER"
+    },
+    {
+        "member_id": "user06",
+        "name": "정다은",
+        "password": "Test1234",
+        "email": "daeun@naver.com",
+        "phone": "01077778888",
+        "reg_date": "2026-08-21",
         "role": "USER"
     }
 ]

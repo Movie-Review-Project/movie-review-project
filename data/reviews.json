@@ -1,6 +1,166 @@
 [
     {
         "review_id": 1,
+        "member_id": "user01",
+        "movie_id": "10013",
+        "recommend": true,
+        "rating": 5.0,
+        "review": "역사를 이렇게 풀어내다니",
+        "watch_date": "2026-02-07",
+        "reg_date": "2026-02-08"
+    },
+    {
+        "review_id": 2,
+        "member_id": "admin",
+        "movie_id": "10013",
+        "recommend": true,
+        "rating": 4.5,
+        "review": "배우들 연기에 몰입했다",
+        "watch_date": "2026-02-10",
+        "reg_date": "2026-02-11"
+    },
+    {
+        "review_id": 3,
+        "member_id": "user02",
+        "movie_id": "10013",
+        "recommend": true,
+        "rating": 4.0,
+        "review": "잔잔하지만 여운이 길다",
+        "watch_date": "2026-02-20",
+        "reg_date": "2026-02-21"
+    },
+    {
+        "review_id": 4,
+        "member_id": "hong1234",
+        "movie_id": "10012",
+        "recommend": true,
+        "rating": 4.5,
+        "review": "좀비물 중 손꼽을 만하다",
+        "watch_date": "2026-05-23",
+        "reg_date": "2026-05-24"
+    },
+    {
+        "review_id": 5,
+        "member_id": "user03",
+        "movie_id": "10012",
+        "recommend": true,
+        "rating": 4.0,
+        "review": "고립된 빌딩 설정이 신선하다",
+        "watch_date": "2026-05-30",
+        "reg_date": "2026-06-01"
+    },
+    {
+        "review_id": 6,
+        "member_id": "user01",
+        "movie_id": "10012",
+        "recommend": false,
+        "rating": 3.0,
+        "review": "후반 신파가 아쉽다",
+        "watch_date": "2026-06-07",
+        "reg_date": "2026-06-08"
+    },
+    {
+        "review_id": 7,
+        "member_id": "user05",
+        "movie_id": "10015",
+        "recommend": true,
+        "rating": 4.5,
+        "review": "다시 봐도 웃기다",
+        "watch_date": "2026-07-05",
+        "reg_date": "2026-07-06"
+    },
+    {
+        "review_id": 8,
+        "member_id": "hong1234",
+        "movie_id": "10002",
+        "recommend": true,
+        "rating": 4.0,
+        "review": "스케일이 압도적이다",
+        "watch_date": "2026-08-10",
+        "reg_date": "2026-08-11"
+    },
+    {
+        "review_id": 9,
+        "member_id": "user04",
+        "movie_id": "10002",
+        "recommend": true,
+        "rating": 4.5,
+        "review": "아이맥스로 꼭 봐야 하는 영화",
+        "watch_date": "2026-08-15",
+        "reg_date": "2026-08-16"
+    },
+    {
+        "review_id": 10,
+        "member_id": "user06",
+        "movie_id": "10002",
+        "recommend": true,
+        "rating": 5.0,
+        "review": "올해 최고의 영화",
+        "watch_date": "2026-08-23",
+        "reg_date": "2026-08-24"
+    },
+    {
+        "review_id": 11,
+        "member_id": "user02",
+        "movie_id": "10002",
+        "recommend": false,
+        "rating": 2.5,
+        "review": "러닝타임이 좀 길다",
+        "watch_date": "2026-09-01",
+        "reg_date": "2026-09-02"
+    },
+    {
+        "review_id": 12,
+        "member_id": "user06",
+        "movie_id": "10015",
+        "recommend": true,
+        "rating": 4.0,
+        "review": "명절에 가족이랑 보기 딱",
+        "watch_date": "2026-09-15",
+        "reg_date": "2026-09-16"
+    },
+    {
+        "review_id": 13,
+        "member_id": "user03",
+        "movie_id": "10004",
+        "recommend": true,
+        "rating": 4.5,
+        "review": "마지막 판이 숨막혔다",
+        "watch_date": "2026-09-24",
+        "reg_date": "2026-09-24"
+    },
+    {
+        "review_id": 14,
+        "member_id": "admin",
+        "movie_id": "10003",
+        "recommend": true,
+        "rating": 4.0,
+        "review": "긴장감이 끝까지 유지된다",
+        "watch_date": "2026-09-25",
+        "reg_date": "2026-09-26"
+    },
+    {
+        "review_id": 15,
+        "member_id": "user01",
+        "movie_id": "10004",
+        "recommend": false,
+        "rating": 3.0,
+        "review": "전작만큼의 재미는 아니다",
+        "watch_date": "2026-09-26",
+        "reg_date": "2026-09-27"
+    },
+    {
+        "review_id": 16,
+        "member_id": "user01",
+        "movie_id": "10003",
+        "recommend": true,
+        "rating": 3.5,
+        "review": "배우들 연기가 좋다",
+        "watch_date": "2026-09-27",
+        "reg_date": "2026-09-28"
+    },
+    {
+        "review_id": 17,
         "member_id": "admin",
         "movie_id": "10001",
         "recommend": true,
@@ -10,18 +170,48 @@
         "reg_date": "2026-10-01"
     },
     {
-        "review_id": 2,
-        "member_id": 2,
+        "review_id": 18,
+        "member_id": "user04",
+        "movie_id": "10003",
+        "recommend": false,
+        "rating": 2.0,
+        "review": "결말이 허무하다",
+        "watch_date": "2026-10-01",
+        "reg_date": "2026-10-01"
+    },
+    {
+        "review_id": 19,
+        "member_id": "user02",
         "movie_id": "10001",
         "recommend": true,
         "rating": 4.5,
-        "review": "계단 연출이 계속 생각난다",
+        "review": "인어 섬 비주얼이 정말 귀엽다",
         "watch_date": "2026-10-02",
         "reg_date": "2026-10-03"
     },
     {
-        "review_id": 3,
-        "member_id": 3,
+        "review_id": 20,
+        "member_id": "user06",
+        "movie_id": "10004",
+        "recommend": true,
+        "rating": 4.0,
+        "review": "시리즈 피날레로 손색없다",
+        "watch_date": "2026-10-03",
+        "reg_date": "2026-10-04"
+    },
+    {
+        "review_id": 21,
+        "member_id": "user05",
+        "movie_id": "10011",
+        "recommend": true,
+        "rating": 4.0,
+        "review": "주인공이 죽을 때마다 웃김",
+        "watch_date": "2026-10-03",
+        "reg_date": "2026-10-04"
+    },
+    {
+        "review_id": 22,
+        "member_id": "user03",
         "movie_id": "10001",
         "recommend": false,
         "rating": 3.0,
@@ -30,23 +220,213 @@
         "reg_date": "2026-10-05"
     },
     {
-        "review_id": 4,
-        "member_id": 1,
-        "movie_id": "10002",
+        "review_id": 23,
+        "member_id": "hong1234",
+        "movie_id": "10001",
         "recommend": true,
-        "rating": 4.0,
-        "review": "결말이 충격적이네",
-        "watch_date": "2026-08-10",
+        "rating": 4.5,
+        "review": "아이랑 같이 봤는데 둘 다 만족",
+        "watch_date": "2026-10-05",
+        "reg_date": "2026-10-06"
+    },
+    {
+        "review_id": 24,
+        "member_id": "user02",
+        "movie_id": "10011",
+        "recommend": true,
+        "rating": 3.5,
+        "review": "B급 감성 제대로",
+        "watch_date": "2026-10-06",
         "reg_date": "2026-10-07"
     },
     {
-        "review_id": 5,
-        "member_id": 2,
-        "movie_id": "10002",
+        "review_id": 25,
+        "member_id": "user04",
+        "movie_id": "10011",
         "recommend": false,
         "rating": 2.5,
-        "review": "러닝타임이 좀 길다",
-        "watch_date": "2026-09-01",
+        "review": "중반부가 늘어진다",
+        "watch_date": "2026-10-09",
         "reg_date": "2026-10-10"
+    },
+    {
+        "review_id": 26,
+        "member_id": "user05",
+        "movie_id": "10001",
+        "recommend": true,
+        "rating": 5.0,
+        "review": "하치와레 장면에서 울었다",
+        "watch_date": "2026-10-11",
+        "reg_date": "2026-10-11"
+    },
+    {
+        "review_id": 27,
+        "member_id": "admin",
+        "movie_id": "10004",
+        "recommend": true,
+        "rating": 4.5,
+        "review": "두 주인공의 대결 구도가 좋다",
+        "watch_date": "2026-10-10",
+        "reg_date": "2026-10-12"
+    },
+    {
+        "review_id": 28,
+        "member_id": "user04",
+        "movie_id": "10006",
+        "recommend": true,
+        "rating": 4.0,
+        "review": "웃다가 끝났다",
+        "watch_date": "2026-10-14",
+        "reg_date": "2026-10-15"
+    },
+    {
+        "review_id": 29,
+        "member_id": "user05",
+        "movie_id": "10005",
+        "recommend": true,
+        "rating": 4.0,
+        "review": "게임 덕후라면 무조건 봐야 함",
+        "watch_date": "2026-10-15",
+        "reg_date": "2026-10-15"
+    },
+    {
+        "review_id": 30,
+        "member_id": "user03",
+        "movie_id": "10009",
+        "recommend": true,
+        "rating": 4.0,
+        "review": "액션 합이 시원시원하다",
+        "watch_date": "2026-10-15",
+        "reg_date": "2026-10-15"
+    },
+    {
+        "review_id": 31,
+        "member_id": "user06",
+        "movie_id": "10007",
+        "recommend": true,
+        "rating": 4.5,
+        "review": "60분 내내 손에 땀을 쥐었다",
+        "watch_date": "2026-10-15",
+        "reg_date": "2026-10-16"
+    },
+    {
+        "review_id": 32,
+        "member_id": "user03",
+        "movie_id": "10006",
+        "recommend": false,
+        "rating": 2.5,
+        "review": "개그 코드가 안 맞았다",
+        "watch_date": "2026-10-16",
+        "reg_date": "2026-10-16"
+    },
+    {
+        "review_id": 33,
+        "member_id": "user04",
+        "movie_id": "10010",
+        "recommend": true,
+        "rating": 4.5,
+        "review": "영상미가 아름답다",
+        "watch_date": "2026-10-16",
+        "reg_date": "2026-10-17"
+    },
+    {
+        "review_id": 34,
+        "member_id": "admin",
+        "movie_id": "10007",
+        "recommend": false,
+        "rating": 3.0,
+        "review": "설정은 신선한데 개연성이 아쉽다",
+        "watch_date": "2026-10-17",
+        "reg_date": "2026-10-18"
+    },
+    {
+        "review_id": 35,
+        "member_id": "user02",
+        "movie_id": "10008",
+        "recommend": true,
+        "rating": 4.0,
+        "review": "밤에 혼자 보지 마세요",
+        "watch_date": "2026-10-17",
+        "reg_date": "2026-10-18"
+    },
+    {
+        "review_id": 36,
+        "member_id": "user05",
+        "movie_id": "10008",
+        "recommend": false,
+        "rating": 1.5,
+        "review": "무섭다기보다 지루했다",
+        "watch_date": "2026-10-18",
+        "reg_date": "2026-10-18"
+    },
+    {
+        "review_id": 37,
+        "member_id": "hong1234",
+        "movie_id": "10005",
+        "recommend": true,
+        "rating": 3.5,
+        "review": "가볍게 보기 좋다",
+        "watch_date": "2026-10-18",
+        "reg_date": "2026-10-19"
+    },
+    {
+        "review_id": 38,
+        "member_id": "user06",
+        "movie_id": "10009",
+        "recommend": false,
+        "rating": 2.5,
+        "review": "원작 팬으로서 아쉽다",
+        "watch_date": "2026-10-18",
+        "reg_date": "2026-10-19"
+    },
+    {
+        "review_id": 39,
+        "member_id": "user02",
+        "movie_id": "10005",
+        "recommend": false,
+        "rating": 2.0,
+        "review": "스토리가 너무 단순하다",
+        "watch_date": "2026-10-20",
+        "reg_date": "2026-10-20"
+    },
+    {
+        "review_id": 40,
+        "member_id": "user01",
+        "movie_id": "10007",
+        "recommend": true,
+        "rating": 4.0,
+        "review": "고래 뱃속 연출이 실감난다",
+        "watch_date": "2026-10-19",
+        "reg_date": "2026-10-21"
+    },
+    {
+        "review_id": 41,
+        "member_id": "user01",
+        "movie_id": "10010",
+        "recommend": false,
+        "rating": 2.0,
+        "review": "너무 느리고 무겁다",
+        "watch_date": "2026-10-20",
+        "reg_date": "2026-10-22"
+    },
+    {
+        "review_id": 42,
+        "member_id": "admin",
+        "movie_id": "10009",
+        "recommend": true,
+        "rating": 3.5,
+        "review": "캐릭터 재현도가 높다",
+        "watch_date": "2026-10-22",
+        "reg_date": "2026-10-23"
+    },
+    {
+        "review_id": 43,
+        "member_id": "hong1234",
+        "movie_id": "10008",
+        "recommend": true,
+        "rating": 3.5,
+        "review": "분위기 하나는 최고",
+        "watch_date": "2026-10-24",
+        "reg_date": "2026-10-25"
     }
 ]
