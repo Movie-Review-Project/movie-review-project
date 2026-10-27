@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import date, datetime
 
 from models.review import Review
 
@@ -9,7 +10,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REVIEW_FILE = os.path.join(BASE_DIR, "data", "reviews.json")
 
 
-# 리뷰 여러 개를 저장·조회·수정·삭제하는 "기능" 담당
+# 리뷰 여러 개를 저장·조회·수정·삭제하는 "기능" 담당 (화면 출력 없음, 데이터만 반환)
 class ReviewManager:
     # 매니저 생성 시 실행: 리뷰 저장소 준비 후 파일에서 불러옴
     def __init__(self):
@@ -52,31 +53,125 @@ class ReviewManager:
             return False
 
     # [내부용] 특정 영화의 리뷰만 골라서 리스트로 반환 (평균·Top3·리뷰 조회에서 재사용)
-    def _get_reviews_by_movie(self, movie_id: int) -> list[Review]:
-        return [r for r in self.reviews.values() if r.movie_id == movie_id]
+    # 양쪽을 str로 바꿔서 비교 → 저장값·전달값이 int든 str든 매칭됨
+    def _get_reviews_by_movie(self, movie_id: str) -> list[Review]:
+        return [r for r in self.reviews.values() if str(r.movie_id) == str(movie_id)]
 
-    # [리뷰 작성] 새 리뷰를 저장 → 성공 True / 실패 False
-    # ※ 구현 예정: review_id 자동 생성(최대값+1), reg_date 오늘 날짜, JSON 저장
-    def do_review_save(self, review: Review) -> bool:
-        pass
+    # [내부용] 날짜 문자열 → "YYYY-MM-DD"로 통일 (형식이 틀리거나 None이면 None)
+    # 예: "2026-1-5" → "2026-01-05", "2026-13-01" → None
+    def _to_date_text(self, text: str | None) -> str | None:
+        try:
+            return datetime.strptime(text, "%Y-%m-%d").date().isoformat()
+        except (TypeError, ValueError):
+            return None
 
-    # [내 관람 기록] 특정 회원이 쓴 리뷰만 골라서 목록으로 반환
+    # [내부용] 저장·수정 전 값 검사 (화면에서 1차 검사해도 데이터 보호용으로 한 번 더)
+    def _is_valid(self, review: Review) -> bool:
+        # 평점: 숫자이고 1.0 ~ 5.0
+        if not isinstance(review.rating, (int, float)) or not (1.0 <= review.rating <= 5.0):
+            return False
+        # 리뷰 내용: 문자열이고 빈 값 불가
+        if not isinstance(review.review, str) or review.review.strip() == "":
+            return False
+        # 관람 날짜: 선택 항목 → 없으면 통과, 있으면 형식·미래 날짜 검사
+        if review.watch_date is not None:
+            watch_text = self._to_date_text(review.watch_date)
+            if watch_text is None or watch_text > date.today().isoformat():
+                return False
+        return True
+
+    # [리뷰 작성] 값을 받아 새 리뷰를 만들어 저장 → 성공 True / 실패 False
+    # 호출 형식: do_review_save(회원ID, 영화ID, 평점, 리뷰내용, 추천여부)
+    # watch_date(관람 날짜)는 선택. 안 넘기면 None으로 저장
+    # review_id, reg_date는 여기서 자동 생성
+    def do_review_save(
+        self,
+        member_id: int,
+        movie_id: str,
+        rating: float,
+        review_text: str,
+        recommend: bool,
+        watch_date: str | None = None,
+    ) -> bool:
+        # 평점이 input()으로 받은 "4.5" 같은 문자열이어도 숫자로 변환 (변환 불가면 실패)
+        try:
+            rating = float(rating)
+        except (TypeError, ValueError):
+            return False
+        # 넘겨받은 값으로 Review 객체 생성 (ID·작성일은 아래에서 채움)
+        new_review = Review(
+            None,
+            member_id,
+            str(movie_id),   # movie_id는 항상 str로 저장
+            recommend,
+            rating,
+            review_text,
+            watch_date,
+            None,
+        )
+        if not self._is_valid(new_review):
+            return False
+        # 관람 날짜가 있으면 YYYY-MM-DD로 통일
+        if watch_date is not None:
+            new_review.watch_date = self._to_date_text(watch_date)
+        # 새 ID = 기존 최대 ID + 1 (리뷰가 하나도 없으면 1)
+        new_review.review_id = max(self.reviews.keys(), default=0) + 1
+        # 작성 일자 = 오늘 (YYYY-MM-DD → 작성일 정렬이 문자열 비교로 정확히 동작)
+        new_review.reg_date = date.today().isoformat()
+        self.reviews[new_review.review_id] = new_review
+        # 파일 저장 실패 시 방금 넣은 리뷰를 다시 빼서 메모리와 파일 상태를 맞춤
+        if not self._save_reviews():
+            del self.reviews[new_review.review_id]
+            return False
+        return True
+
+    # [내 관람 기록] 특정 회원이 쓴 리뷰만, 작성일 최신순으로 반환
     def do_personal_review_retrieve(self, member_id: int) -> list[Review]:
-        pass
+        my_reviews = [r for r in self.reviews.values() if r.member_id == member_id]
+        # 작성일 같으면 review_id 큰 것(나중에 쓴 것)이 앞
+        return sorted(my_reviews, key=lambda r: (r.reg_date, r.review_id), reverse=True)
 
-    # [리뷰 수정] 수정된 리뷰로 기존 리뷰를 교체 → 성공 여부 반환
+    # [리뷰 수정] review_id가 같은 기존 리뷰의 내용을 교체 → 성공 여부 반환
+    # 수정 가능: recommend, rating, review, watch_date / 유지: member_id, movie_id, reg_date
     def do_personal_review_update(self, review: Review) -> bool:
-        pass
+        original = self.reviews.get(review.review_id)
+        # 없는 리뷰
+        if original is None:
+            return False
+        # 작성자 본인만 수정 가능
+        if original.member_id != review.member_id:
+            return False
+        if not self._is_valid(review):
+            return False
+        # 저장 실패 대비 기존 값 보관
+        backup = (original.recommend, original.rating, original.review, original.watch_date)
+        original.recommend = review.recommend
+        original.rating = review.rating
+        original.review = review.review
+        original.watch_date = self._to_date_text(review.watch_date)
+        # 파일 저장 실패 시 원래 값으로 되돌림
+        if not self._save_reviews():
+            original.recommend, original.rating, original.review, original.watch_date = backup
+            return False
+        return True
 
-    # [리뷰 삭제] review_id에 해당하는 리뷰 삭제 → 성공 여부 반환
-    # 없는 ID면 False
+    # [리뷰 삭제] review_id에 해당하는 리뷰 삭제 → 성공 여부 반환 (없는 ID면 False)
+    # ※ member_id 인자가 없어 본인 확인 불가 → 호출하는 쪽이 "내 리뷰 목록"에서 고른 ID만 넘겨야 함
     def do_personal_review_delete(self, review_id: int) -> bool:
-        pass
+        # pop: 꺼내면서 삭제, 없으면 None
+        removed = self.reviews.pop(review_id, None)
+        if removed is None:
+            return False
+        # 파일 저장 실패 시 다시 넣어서 복구
+        if not self._save_reviews():
+            self.reviews[review_id] = removed
+            return False
+        return True
 
     # [리뷰 조회] 특정 영화 리뷰를 조건에 맞게 필터·정렬해서 반환
     # recommend: True=추천만 / False=비추천만 / None=전체
     # sort_by: "rating"(평점) / "reg_date"(작성일), order: "asc"(오름차순) / "desc"(내림차순)
-    def do_review_retrieve(self, movie_id: int, recommend: bool | None, sort_by: str, order: str) -> list[Review]:
+    def do_review_retrieve(self, movie_id: str, recommend: bool | None, sort_by: str, order: str) -> list[Review]:
         # 잘못된 정렬 값이면 바로 에러 → 호출하는 쪽 코드 실수를 빨리 발견
         if sort_by not in ("rating", "reg_date"):
             raise ValueError(f"sort_by는 'rating' 또는 'reg_date'만 가능합니다: {sort_by}")
@@ -97,7 +192,7 @@ class ReviewManager:
 
     # [영화 상세] 특정 영화의 평균 평점 반환
     # 리뷰가 없으면 None (0으로 나누기 에러 방지)
-    def do_review_avg_rating(self, movie_id: int) -> float | None:
+    def do_review_avg_rating(self, movie_id: str) -> float | None:
         movie_reviews = self._get_reviews_by_movie(movie_id)
         # 리뷰 0개면 평균을 낼 수 없으니 None
         if len(movie_reviews) == 0:
@@ -108,7 +203,7 @@ class ReviewManager:
 
     # [영화 상세] 특정 영화의 리뷰 Top3 반환
     # 기준: 평점 높은 순, 평점 같으면 최신 작성순 (팀 미정 → 가정)
-    def do_review_top3(self, movie_id: int) -> list[Review]:
+    def do_review_top3(self, movie_id: str) -> list[Review]:
         movie_reviews = self._get_reviews_by_movie(movie_id)
         # (평점, 작성일) 묶음 기준 내림차순 → 평점이 같으면 작성일이 늦은 리뷰가 앞
         sorted_reviews = sorted(movie_reviews, key=lambda r: (r.rating, r.reg_date), reverse=True)
