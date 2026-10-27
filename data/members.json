@@ -1,20 +1,56 @@
 [
-  {
-    "member_id": "hong1234",
-    "name": "홍길동",
-    "password": "qwer1234!",
-    "email": "hong@example.com",
-    "phone": "010-0000-0000",
-    "reg_date": "2026-10-22",
-    "role": "USER"
-  },
-  {
-    "member_id": "admin",
-    "name": "관리자",
-    "password": "qwer1234!",
-    "email": "admin@test.com",
-    "phone": "010-0000-0000",
-    "reg_date": "2026-10-22",
-    "role": "ADMIN"
-  }
+    {
+        "member_id": "hong1234",
+        "name": "홍길동",
+        "password": "qwer1234!",
+        "email": "hong@example.com",
+        "phone": "010-0000-0000",
+        "reg_date": "2026-10-22",
+        "role": "USER"
+    },
+    {
+        "member_id": "admin",
+        "name": "관리자",
+        "password": "qwer1234!",
+        "email": "admin@test.com",
+        "phone": "010-0000-0000",
+        "reg_date": "2026-10-22",
+        "role": "ADMIN"
+    },
+    {
+        "member_id": "user02",
+        "name": "박민철",
+        "password": "abc12345",
+        "email": "test3@gmail.com",
+        "phone": "01012345678",
+        "reg_date": "2026-10-23",
+        "role": "USER"
+    },
+    {
+        "member_id": "user03",
+        "name": "김철수",
+        "password": "Test1234",
+        "email": "kimchul@naver.com",
+        "phone": "01011112222",
+        "reg_date": "2026-10-24",
+        "role": "USER"
+    },
+    {
+        "member_id": "user04",
+        "name": "김민수",
+        "password": "Test1234",
+        "email": "minsu@gmail.com",
+        "phone": "01033334444",
+        "reg_date": "2026-10-25",
+        "role": "USER"
+    },
+    {
+        "member_id": "user05",
+        "name": "이영희",
+        "password": "Test1234",
+        "email": "lee@gmail.com",
+        "phone": "01022223333",
+        "reg_date": "2026-10-26",
+        "role": "USER"
+    }
 ]
