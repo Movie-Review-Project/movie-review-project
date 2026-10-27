@@ -1,0 +1,122 @@
+[
+    {
+        "movie_id": "10001",
+        "movie_name": "극장판 치이카와-인어 섬의 비밀",
+        "movie_genre": "모험",
+        "movie_release": "2026-09-30",
+        "movie_running_time": "99",
+        "movie_intro": "치이카와와 가르마가 섬의 비밀을 파헤치는 이야기"
+    },
+    {
+        "movie_id": "10002",
+        "movie_name": "오디세이",
+        "movie_genre": "액션",
+        "movie_release": "2026-08-05",
+        "movie_running_time": "172",
+        "movie_intro": "오디세우스가 전쟁 후 집에 돌아가는 이야기"
+    },
+    {
+        "movie_id": "10003",
+        "movie_name": "암살자(들)",
+        "movie_genre": "범죄",
+        "movie_release": "2026-09-23",
+        "movie_running_time": "131",
+        "movie_intro": "영부인 저격사건의 의혹과 배후를 추적하는 이야기"
+    },
+    {
+        "movie_id": "10004",
+        "movie_name": "타짜-벨제붑의 노래",
+        "movie_genre":"드라마",
+        "movie_release": "2026-09-23",
+        "movie_running_time": "129",
+        "movie_intro": "타짜 시리즈의 피날레: 장태영과 박태영, 두 악마의 마지막 승부"
+    },
+    {
+        "movie_id": "10005",
+        "movie_name": "전자오락수호대",
+        "movie_genre": "모험",
+        "movie_release": "2026-10-14",
+        "movie_running_time": "110",
+        "movie_intro": "전자오락수호대의 요원 패치가 게임 세상을 구하는 이야기"
+    },
+    {
+        "movie_id": "10006",
+        "movie_name": "디거",
+        "movie_genre": "코미디",
+        "movie_release": "2026-10-13",
+        "movie_running_time": "129",
+        "movie_intro": "끝까지 파거나 죽거나! 디거 록웰의 삽 끝에서 시작된 이야기"
+    },
+    {
+        "movie_id": "10007",
+        "movie_name": "웨일폴: 고래에 먹힌 남자",
+        "movie_genre": "모험",
+        "movie_release": "2026-10-14",
+        "movie_running_time": "106",
+        "movie_intro": "산채로 고래에게 먹혔다! 남은 시간 단 60분, 반드시 탈출해야 한다!"
+    },
+    {
+        "movie_id": "10008",
+        "movie_name": "입에 대한 앙케트",
+        "movie_genre": "공포",
+        "movie_release": "2026-10-17",
+        "movie_running_time": "89",
+        "movie_intro": "심령 명소로 유명한 묘지에 담력 시험을 나선다. 그리고 다음 날 일행 중 한 명이 흔적도 없이 사라진다."
+    },
+    {
+        "movie_id": "10009",
+        "movie_name": "스트리트 파이터",
+        "movie_genre": "액션",
+        "movie_release": "2026-10-14",
+        "movie_running_time": "119",
+        "movie_intro": "최고가 되는 것은 오직 단 한 명! 최강의 파이터가 여기서 결정된다"
+    },
+    {
+        "movie_id": "10010",
+        "movie_name": "침묵의 빛",
+        "movie_genre": "로맨스",
+        "movie_release": "2026-10-14",
+        "movie_running_time": "136",
+        "movie_intro": "헌신적인 가장 요한은 어느날 다른 여자와 신의 뜻에 어긋나는 사랑에 빠지고 만다."
+    },
+    {
+        "movie_id": "10011",
+        "movie_name": "부활남-더 레드",
+        "movie_genre": "코미디",
+        "movie_release": "2026-09-30",
+        "movie_running_time": "101",
+        "movie_intro": "죽을수록 강해지는 석환, 그의 목숨을 건(?) 반격이 시작된다!"
+    },
+    {
+        "movie_id": "10012",
+        "movie_name": "군체",
+        "movie_genre": "액션",
+        "movie_release": "2026-05-21",
+        "movie_running_time": "122",
+        "movie_intro": "서울 도심의 초고층 빌딩에서 발생한 집단 감염사태, 건물은 순식간에 봉쇄되고, 그 안에 있던 사람들은 그대로 고립된다."
+    },
+    {
+        "movie_id": "10013",
+        "movie_name": "왕과 사는 남자",
+        "movie_genre": "드라마",
+        "movie_release": "2026-02-04",
+        "movie_running_time": "117",
+        "movie_intro": "1457년 청령포, 역사가 지우려 했던 이야기"
+    },
+    {
+        "movie_id": "10014",
+        "movie_name": "명량",
+        "movie_genre": "드라마",
+        "movie_release": "2014-07-30",
+        "movie_running_time": "128",
+        "movie_intro": "300척이 넘는 왜군을 상대로 이순신은 남해안 서쪽 끝 벽파진에 12척의 판옥선으로 보루를 세운다."
+    },
+    {
+        "movie_id": "10015",
+        "movie_name": "극한직업",
+        "movie_genre": "코미디",
+        "movie_release": "2019-01-23",
+        "movie_running_time": "111",
+        "movie_intro": "낮에는 치킨장사! 밤에는 잠복근무! 지금까지 이런 수사는 없었다!"
+    }
+]
