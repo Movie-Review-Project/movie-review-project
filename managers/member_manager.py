@@ -15,6 +15,8 @@ class MemberManager:
 
     # members.json 파일에서 회원 정보 불러오기
     def load_members(self) -> list[dict[str, str]]:
+        """members.json 파일에서 회원 정보 불러오기"""
+
         if not self.file_path.exists():
             return []
 
@@ -28,6 +30,8 @@ class MemberManager:
 
     # members.json 파일에 회원 정보 저장
     def save_members(self) -> None:
+        """members.json 파일에 회원 정보 저장"""
+
         self.file_path.parent.mkdir(parents=True, exist_ok=True)
 
         with self.file_path.open('w', encoding='utf-8') as file:
@@ -35,6 +39,8 @@ class MemberManager:
 
     # 회원 정보 존재 여부 확인
     def is_exist(self, member_id: str) -> bool:
+        """회원ID로 존재 여부 확인"""
+
         for member in self.members:
             if member_id == member['member_id']:
                 return True
@@ -42,6 +48,8 @@ class MemberManager:
 
     # 개별 항목 유효성 검사
     def is_valid_field(self, field: str, value: object) -> bool:
+        """회원가입, 회원 수정 시 입력한 데이터 유효성 검사"""
+
         patterns = {
             'member_id': r'[a-zA-Z0-9]{4,12}',
             'name': r'.+',
@@ -58,6 +66,8 @@ class MemberManager:
 
     # 회원가입 유효성 검사
     def is_valid_member(self, member: Member) -> bool:
+        """회원가입 시 입력한 데이터 유효성 검사"""
+
         fields = {
             'member_id': member.member_id,
             'name': member.name,
@@ -81,6 +91,8 @@ class MemberManager:
         email: str,
         phone: str,
     ) -> bool:
+        """회원가입(회원 정보 추가) 기능"""
+
         member = Member(member_id, name, password, email, phone)
 
         # 회원 정보 유효성 검사
@@ -119,6 +131,7 @@ class MemberManager:
         sort_by: str | None = None,
         descending: bool = False,
     ) -> list[dict[str, str]]:
+        """회원 검색 기능"""
 
         # 검색 및 정렬 조건 검사
         if field not in ('member_id', 'name', 'email', 'phone', None):
@@ -162,6 +175,8 @@ class MemberManager:
         email: str | None = None,
         phone: str | None = None,
     ) -> bool:
+        """회원 정보 수정 유효성 검사"""
+
         # 아이디 검사
         if not self.is_valid_field('member_id', member_id):
             return False
@@ -193,6 +208,8 @@ class MemberManager:
         email: str | None = None,
         phone: str | None = None,
     ) -> bool:
+        """회원 정보 수정 기능"""
+
         # 회원 수정 유효성 검사
         if not self.is_valid_update_member(member_id, name, password, email, phone):
             print('수정할 회원 정보를 확인해주세요.')
@@ -232,6 +249,8 @@ class MemberManager:
 
     # 회원 삭제
     def do_member_delete(self, admin_id: str, member_id: str) -> bool:
+        """회원 정보 삭제 기능"""
+
         # 관리자 권한 확인
         is_admin = any(
             member['member_id'] == admin_id and member['role'] == 'ADMIN'
@@ -262,6 +281,8 @@ class MemberManager:
 
     # 로그인
     def login(self, member_id, password):
+        """로그인 기능"""
+
         if (
             not isinstance(member_id, str)
             or not member_id.strip()
