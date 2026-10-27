@@ -10,7 +10,10 @@ class Movie:
                 movie_running_time:str,
                 movie_intro:str
                 ):
-        
+
+        self.recommend_count = 0
+        self.not_recommend_count = 0
+    
         self.__movie_id = movie_id
         self.__movie_name = movie_name
         self.__movie_genre = movie_genre
@@ -84,3 +87,27 @@ class Movie:
         if not isinstance(value,str) or not value.strip():
             raise ValueError("영화 러닝타임은 필수 문자열입니다.")
         self.__movie_intro = value
+
+    @classmethod
+    def from_dict(cls, data:dict) -> "Movie":
+        """dict 데이터를 Member 객체로 변환"""
+        movie = cls(
+            movie_id = data["movie_id"],
+            movie_name = data["movie_name"],
+            movie_genre = data["movie_genre"],
+            movie_release = data["movie_release"],
+            movie_running_time = data["movie_running_time"],
+            movie_intro = ["movie_intro"]
+        )
+        return movie
+
+    def to_dict(self)->dict:
+        """Movie 객체를 딕셔너리로 변환"""
+        return{
+            "movie_id":self.movie_id,
+            "movie_name":self.movie_name,
+            "movie_genre":self.movie_genre,
+            "movie_release":self.movie_release,
+            "movie_running_time":self.movie_running_time,
+            "movie_intro":self.movie_intro
+        }
