@@ -69,6 +69,10 @@ class MovieManager:
 
         return None
 
+    def do_retrieve_movie(self) -> list[Movie]:
+        """전체 영화 목록을 반환합니다"""
+        return self.movies.copy()
+
     def date_sort_movies(self) -> list[dict,dict]:
         """개봉일 최신순 정렬"""
         self.movies.sort(key=lambda movie: movie["movie_release"], reverse=True)
@@ -98,19 +102,34 @@ class MovieManager:
         if movie is None:
             return False
 
-        self.movies.remove(movie)
-        self.save_json()
+        index = self.movies.index(movie)
+        self.movies.pop(index)
+        
+        try:
+            self.save_json()
+        except Exception:
+            self.movies.insert(index,self.movie)
 
         return True
 
-    def do_update_movie(self,mod_movie:str) -> int:
+    def do_update_movie(self,mod_movie:Movie) -> int:
         """영화 정보 수정"""
-        exist_movie = self.search_movie(mod_movie.movie_name)
 
-        if exist_movie is None:
-            return 0
+        for index, current_movie in enumerate(self.movies):
+            if current_movie.movie_id == mod_movie.movie_id:
+                self.movies[index] = mod_movie
 
-        exist_movie.movie_genre = mod_movie.movie_genre
-        exist_movie.movie_intro = mod_movie.movie_intro
+            try:
+                self.save_json()
+            except Exception:
+                self.movies[index] = current_movie
+                raise
+            return 1
 
-        return 1
+        return 0
+
+    def id_to_name(self,movie_id:str) -> str:
+        """영화 ID를 넣으면 영화 제목으로 반환"""
+        for movie in self.movies:
+            if movie_id == movie.movie_id:
+                return movie.movie_name
