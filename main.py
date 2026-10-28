@@ -1,12 +1,6 @@
 from managers.member_manager import MemberManager
 from managers.movie_manager import MovieManager
 from managers.review_manager import ReviewManager
-#  ↓ .py 끌어오면 날릴것들 ↓
-import json
-import os
-from datetime import datetime
-from types import SimpleNamespace
-
 
 # 정수 입력 (출력문구, min~max)
 def input_int(prompt, min_val, max_val):
