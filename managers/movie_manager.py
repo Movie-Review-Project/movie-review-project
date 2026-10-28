@@ -98,6 +98,7 @@ class MovieManager:
             self.save_json()
         except Exception:
             self.movies.remove(movie)
+            raise
 
         return 1
 
@@ -116,6 +117,7 @@ class MovieManager:
             self.save_json()
         except Exception:
             self.movies.insert(index,self.movie)
+            raise
 
         return True
 
