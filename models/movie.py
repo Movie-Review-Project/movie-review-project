@@ -85,7 +85,7 @@ class Movie:
     @movie_intro.setter
     def movie_intro(self,value:str) -> None:
         if not isinstance(value,str) or not value.strip():
-            raise ValueError("영화 러닝타임은 필수 문자열입니다.")
+            raise ValueError("영화 줄거리는 필수 문자열입니다.")
         self.__movie_intro = value
 
     @classmethod
