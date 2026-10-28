@@ -100,12 +100,23 @@ def register(member_manager):
     email = input("Email: ").strip()
     password = input("비밀번호 (영문+숫자 조합 8~10자): ").strip()
 
+    # 권한 받아서 넘겨주기
+    print("="*50)
+    print("1. 관리자")
+    print("2. 일반 회원")
+    role_menu = input_int("권한 선택", 1, 2)
+
+    if role_menu == 1:
+        role = "ADMIN"
+    else:
+        role = "USER"
+
     if not member_id or not name or not phone or not email or not password:
         print("회원가입 실패. 모든 항목을 입력해주세요.")
         return False
     
     result = member_manager.do_member_save(
-        member_id, name, password, email, phone
+        member_id, name, password, email, phone, role
         )
 
     if result:
