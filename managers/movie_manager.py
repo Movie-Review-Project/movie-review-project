@@ -78,9 +78,9 @@ class MovieManager:
         return self.movies.copy()
 
     # 개봉일 기준 최신순 정렬
-    def date_sort_movies(self) -> list[dict,dict]:
+    def date_sort_movies(self) -> list[Movie]:
         """개봉일 최신순 정렬"""
-        self.movies.sort(key=lambda movie: movie["movie_release"], reverse=True)
+        self.movies.sort(key=lambda movie: movie.movie_release, reverse=True)
         return self.movies
 
     # 영화 추가 
