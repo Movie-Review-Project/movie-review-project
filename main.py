@@ -64,6 +64,9 @@ def show_start_menu():
 
 # 영화 목록 출력
 def show_movie_list(movie_list):
+    if not movie_list:
+        print("선택 가능한 영화 목록이 없습니다")
+        return None
     print("영화를 선택해 주세요")
     print("="*50)
     print("영화 목록")
@@ -177,7 +180,8 @@ def view_review(movie_manager, review_manager):
             movie = show_movie_list(movie_manager.movies)
         else:
             movie = show_movie_list(right_movies)
-
+    if movie is None:
+        return
     print("리뷰 정렬 방법을 선택해 주세요")
     print("1. 최신    2. 평점")
     sort = input_int("정렬방법: ", 1, 2)
@@ -204,7 +208,8 @@ def create_review(member_manager, movie_manager, review_manager):
                 movie = show_movie_list(movie_manager.movies)
             else:
                 movie = show_movie_list(right_movies)
-        
+        if movie is None:
+            return
         print("="*50)
         print("리뷰 작성 -", movie.movie_name)
         
@@ -372,17 +377,21 @@ def member_info(member_manager):
         print(f"삭제할 회원: {selected_member.name}")
         print(f"회원 ID: {member_id}")
 
-        confirm = input("정말 삭제하시겠습니까? (y/n): ").strip().lower()
+        while True:
+            confirm = input("정말 삭제하시겠습니까? (y/n): ").strip().lower()
+            if confirm not in ('y', 'n'):
+                print("y/n 중에 입력해주세요")
+                continue
+            if confirm == "y":
+                admin_id = member_manager.member.member_id
 
-        if confirm == "y":
-            admin_id = member_manager.member.member_id
+                print(f"관리자 ID 확인: {admin_id}")
+                print(f"관리자 권한 확인: {member_manager.member.role}")
 
-            print(f"관리자 ID 확인: {admin_id}")
-            print(f"관리자 권한 확인: {member_manager.member.role}")
-
-            member_manager.do_member_delete(member_id)
-        else:
-            print("회원 삭제를 취소했습니다.")
+                check = member_manager.do_member_delete(member_id)
+            else:
+                print("회원 삭제를 취소했습니다.")
+            break
     
 # 영화 검색 선택할 경우
 def find_movie(movie_manager, review_manager):
@@ -394,7 +403,9 @@ def find_movie(movie_manager, review_manager):
         return
 
     while True:
-        keyword = input("\n검색할 영화 제목을 입력하세요.\n한 글자라도 영화 제목에 포함이 되면 해당 단어를 가진 영화의 목록이 출력됩니다.\nenter키만 누를 시 전체 영화 목록이 출력됩니다.\n\n 입력: ").strip()
+        print("검색할 영화 제목을 입력하세요.\n한 글자라도 영화 제목에 포함이 되면 해당 단어를 가진 영화의 목록이 출력됩니다.\nenter키만 누를 시 전체 영화 목록이 출력됩니다")
+        print("이전화면으로 돌아가려면 0을 입력해주세요")
+        keyword = input("입력: ").strip()
 
         if keyword == "0":
             return
@@ -513,6 +524,7 @@ def main():
                 continue
 
             member_info(member_manager)
+    print("프로그램을 종료합니다.")
 
 
 
