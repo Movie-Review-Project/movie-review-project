@@ -97,11 +97,11 @@ def show_review(review_manager, movie, sort):
 def register(member_manager):
     print("사용자 정보를 입력해주세요.")
     
-    member_id = input("ID: ").strip()
+    member_id = input("아이디는 영문+숫자 4~12자로 작성해주세요\nID: ").strip()
     name = input("이름: ").strip()
-    phone = input("연락처: ").strip()
+    phone = input("연락처는 하이픈(-) 없이 11자리로 입력해주세요\n연락처: ").strip()
     email = input("Email: ").strip()
-    password = input("비밀번호 (영문+숫자 조합 8~10자): ").strip()
+    password = input("비밀번호는 영문+숫자 조합 8~10자로 작성해주세요\n비밀번호: ").strip()
 
     # 권한 받아서 넘겨주기
     print("="*50)
