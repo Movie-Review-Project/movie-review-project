@@ -282,16 +282,6 @@ class MemberManager:
     def do_member_delete(self, member_id: str) -> bool:
         """회원 정보 삭제 기능"""
 
-        # 관리자 권한 확인
-        is_admin = any(
-            member.member_id == member_id and member.role == 'ADMIN'
-            for member in self.members
-        )
-
-        if not is_admin:
-            print('관리자만 회원을 삭제할 수 있습니다.')
-            return False
-
         # 회원 삭제
         for index, member in enumerate(self.members):
             if member_id == member.member_id:
