@@ -124,8 +124,8 @@ def login(member_manager):
         return None
 
     for member in member_manager.members:
-        if member["member_id"] == member_id:
-            if member.get("role", "USER").upper() == "ADMIN":
+        if member.member_id == member_id:
+            if member.role == "ADMIN":
                 print("관리자 계정으로 로그인 되었습니다.")
 
             return member
@@ -460,8 +460,6 @@ def main():
     member_manager = MemberManager()
     movie_manager = MovieManager()
     review_manager = ReviewManager()
-
-    member_manager.member = member_manager.members[1]
     
     while member_manager.member is None:
         start = show_start_menu()
