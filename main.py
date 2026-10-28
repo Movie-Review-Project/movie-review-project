@@ -107,7 +107,7 @@ def register(member_manager):
     print("="*50)
     print("1. 관리자")
     print("2. 일반 회원")
-    role_menu = input_int("권한 선택", 1, 2)
+    role_menu = input_int("권한 선택: ", 1, 2)
 
     if role_menu == 1:
         role = "ADMIN"
