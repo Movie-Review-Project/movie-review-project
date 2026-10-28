@@ -356,7 +356,7 @@ def find_movie(movie_manager, review_manager):
         return
 
     while True:
-        keyword = input("\n검색할 영화 제목을 입력하세요: ").strip()
+        keyword = input("\n검색할 영화 제목을 입력하세요.\n한 글자라도 영화 제목에 포함이 되면 해당 단어를 가진 영화의 목록이 출력됩니다.\nenter키만 누를 시 전체 영화 목록이 출력됩니다.\n\n 입력: ").strip()
 
         if keyword == "0":
             return
@@ -428,7 +428,16 @@ def find_movie(movie_manager, review_manager):
 
         print("="*50)
 
-        return
+        print("1. 추가 검색")
+        print("0. 이전 메뉴로 돌아가기")
+
+        choice = input_int("선택: ", 0, 1)
+
+        if choice == 1:
+            continue
+
+        elif choice == 0:
+            return
     
 def main():
     # 시작 화면
