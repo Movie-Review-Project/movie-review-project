@@ -81,11 +81,11 @@ class MemberManager:
             'email': member.email,
             'phone': member.phone,
         }
-
+       
         for field, value in fields.items():
             if not self.is_valid_field(field, value):
                 return False
-
+        
         return True
 
     # 회원 정보 추가
@@ -262,12 +262,12 @@ class MemberManager:
         return False
 
     # 회원 삭제
-    def do_member_delete(self, admin_id: str, member_id: str) -> bool:
+    def do_member_delete(self, member_id: str) -> bool:
         """회원 정보 삭제 기능"""
 
         # 관리자 권한 확인
         is_admin = any(
-            member.member_id == admin_id and member.role == 'ADMIN'
+            member.member_id == member_id and member.role == 'ADMIN'
             for member in self.members
         )
 
