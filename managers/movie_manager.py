@@ -6,7 +6,7 @@ from pathlib import Path
 
 class MovieManager:
 
-    def __init__(self,file_path:str|Path|None = None)->None:
+    def __init__(self,file_path:Path|None = None)->None:
         # 기본저장경로
         if file_path is None:
             file_path = (
