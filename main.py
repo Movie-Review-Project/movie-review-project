@@ -252,9 +252,9 @@ def update_review(member_manager, review_manager, movie_manager):
                     print("성공적으로 삭제되었습니다")
                 else:
                     print("삭제에 실패했습니다")
-            action = input_int("1. 추가 작업 진행   2. 종료: ", 1, 2)
-            if action == 2:
-                break
+        action = input_int("1. 추가 작업 진행   2. 종료: ", 1, 2)
+        if action == 2:
+            break
             
 
 # 4. 회원 조회 선택할 경우
