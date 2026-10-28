@@ -12,6 +12,7 @@ from types import SimpleNamespace
 def input_int(prompt, min_val, max_val):
     while True:
         try:
+            print("="*50)
             num = int(input(prompt))
         except ValueError:
             print("정수를 입력해주세요")
@@ -23,6 +24,7 @@ def input_int(prompt, min_val, max_val):
 # 리뷰 내용 입력
 def input_review_info(allow_empty = False):
     while True:
+        print("="*50)
         rate = input("평점을 입력해주세요 (0-5): ").strip()
         if not rate and allow_empty:
             rate = None
@@ -81,14 +83,17 @@ def show_movie_list(movie_list):
 # 리뷰 출력
 def show_review(review_manager, movie, sort):
     reviews = review_manager.do_review_retrieve(movie.movie_id, sort)
-    print("="*50)
-    print(f"리뷰 목록 - {movie.movie_name}")
-    print("="*50)
-    print(f"평균평점 : {review_manager.do_review_avg_rating(movie.movie_id)} / 5.0 (리뷰 {len(reviews)}개)")
-    print("-"*50)
-    for idx, review in enumerate(reviews):
-        print(f"{idx+1}. {review.member_id} | {review.rating}점 | {'추천' if review.recommend == 'y' else '비추천'}")
-        print(f"   {review.review}")
+    if not reviews:
+        print("리뷰가 존재하지 않습니다")
+    else:
+        print("="*50)
+        print(f"리뷰 목록 - {movie.movie_name}")
+        print("-"*50)
+        print(f"평균평점 : {review_manager.do_review_avg_rating(movie.movie_id)} / 5.0 (리뷰 {len(reviews)}개)")
+        print("-"*50)
+        for idx, review in enumerate(reviews):
+            print(f"{idx+1}. {review.member_id} | {review.rating}점 | {'추천' if review.recommend == 'y' else '비추천'}")
+            print(f"   {review.review}")
 
 
 # 회원 가입 선택 시
@@ -173,6 +178,7 @@ def view_review(movie_manager, review_manager):
 def create_review(member_manager, movie_manager, review_manager):
     is_exit = False
     while not is_exit:
+        print("="*50)
         print("리뷰를 작성할 영화 제목을 입력해주세요, 리스트를 보고싶으시면 enter를 눌러주세요")
         keyword = input("검색할 영화 제목을 입력하세요: ").strip()
         print()
@@ -222,30 +228,33 @@ def create_review(member_manager, movie_manager, review_manager):
 def update_review(member_manager, review_manager, movie_manager):
     while True:
         reviews = review_manager.do_personal_review_retrieve(member_manager.member.member_id)
-        for idx, review in enumerate(reviews):
-            print(f"{idx+1}. {movie_manager.id_to_name(review.movie_id)} | {review.rating} | 관람 {review.reg_date} | {"추천" if review.recommend == 'y' else "비추천"}")
-            print(review.review)
-        print("리뷰 번호와 (수정/삭제)를 선택해 주세요")
-        review_idx = input_int("리뷰 번호: ", 1, len(reviews))
-        action = input_int("1. 수정  2.삭제: ", 1, 2)
-        review = reviews[review_idx-1]
-        if action == 1:
-            print("수정할 내용을 입력해 주세요 없다면 enter를 눌러주세요")
-            rate, content, recommend = input_review_info(allow_empty = True)
-            success = review_manager.do_personal_review_update(review, rating=rate, content=content, recommend=recommend)
-            if success:
-                print("성공적으로 수정되었습니다")
-            else:
-                print("수정에 실패했습니다")
+        if not reviews:
+            print("리뷰가 존재하지 않습니다")
         else:
-            success = review_manager.do_personal_review_delete(review)
-            if success:
-                print("성공적으로 삭제되었습니다")
+            for idx, review in enumerate(reviews):
+                print(f"{idx+1}. {movie_manager.id_to_name(review.movie_id)} | {review.rating} | 관람 {review.reg_date} | {"추천" if review.recommend == 'y' else "비추천"}")
+                print(review.review)
+            print("리뷰 번호와 (수정/삭제)를 선택해 주세요")
+            review_idx = input_int("리뷰 번호: ", 1, len(reviews))
+            action = input_int("1. 수정  2.삭제: ", 1, 2)
+            review = reviews[review_idx-1]
+            if action == 1:
+                print("수정할 내용을 입력해 주세요 없다면 enter를 눌러주세요")
+                rate, content, recommend = input_review_info(allow_empty = True)
+                success = review_manager.do_personal_review_update(review, rating=rate, content=content, recommend=recommend)
+                if success:
+                    print("성공적으로 수정되었습니다")
+                else:
+                    print("수정에 실패했습니다")
             else:
-                print("삭제에 실패했습니다")
-        action = input_int("1. 추가 작업 진행   2. 종료: ", 1, 2)
-        if action == 2:
-            break
+                success = review_manager.do_personal_review_delete(review)
+                if success:
+                    print("성공적으로 삭제되었습니다")
+                else:
+                    print("삭제에 실패했습니다")
+            action = input_int("1. 추가 작업 진행   2. 종료: ", 1, 2)
+            if action == 2:
+                break
             
 
 # 4. 회원 조회 선택할 경우
