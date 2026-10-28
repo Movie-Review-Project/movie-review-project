@@ -462,7 +462,7 @@ def main():
     movie_manager = MovieManager()
     review_manager = ReviewManager()
 
-    # member_manager.member = member_manager.members[1]
+    member_manager.member = member_manager.members[1]
     
     while member_manager.member is None:
         start = show_start_menu()
