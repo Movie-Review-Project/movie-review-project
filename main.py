@@ -80,10 +80,10 @@ def show_movie_list(movie_list):
 # 리뷰 출력
 def show_review(review_manager, movie, sort):
     reviews = review_manager.do_review_retrieve(movie.movie_id, sort)
+    print("="*50)
     if not reviews:
         print("리뷰가 존재하지 않습니다")
     else:
-        print("="*50)
         print(f"리뷰 목록 - {movie.movie_name}")
         print("-"*50)
         print(f"평균평점 : {review_manager.do_review_avg_rating(movie.movie_id)} / 5.0 (리뷰 {len(reviews)}개)")
@@ -164,28 +164,35 @@ def show_main_menu(member_manager):
  
 # 2. 리뷰 조회
 def view_review(movie_manager, review_manager): 
-    print("검색할 영화 제목을 입력해주세요, 리스트를 보고싶으시면 enter를 눌러주세요")
-    keyword = input("검색할 영화 제목을 입력하세요: ").strip()
-    print()
-    movie = None
-    if not keyword:
-        movie = show_movie_list(movie_manager.movies)
-    else:    
-        right_movies = [
-            movie for movie in movie_manager.movies
-            if keyword in movie.movie_name
-        ]
-        if not right_movies:
-            print("일치하는 영화가 없습니다")
+    while True:
+        print("검색할 영화 제목을 입력해주세요, 리스트를 보고싶으시면 enter를 눌러주세요")
+        keyword = input("검색할 영화 제목을 입력하세요: ").strip()
+        print()
+        movie = None
+        if not keyword:
             movie = show_movie_list(movie_manager.movies)
-        else:
-            movie = show_movie_list(right_movies)
-    if movie is None:
-        return
-    print("리뷰 정렬 방법을 선택해 주세요")
-    print("1. 최신    2. 평점")
-    sort = input_int("정렬방법: ", 1, 2)
-    show_review(review_manager, movie, sort)
+        else:    
+            right_movies = [
+                movie for movie in movie_manager.movies
+                if keyword in movie.movie_name
+            ]
+            if not right_movies:
+                print("일치하는 영화가 없습니다")
+                movie = show_movie_list(movie_manager.movies)
+            else:
+                movie = show_movie_list(right_movies)
+        if movie is None:
+            return
+        print("리뷰 정렬 방법을 선택해 주세요")
+        print("1. 최신    2. 평점")
+        sort = input_int("정렬방법: ", 1, 2)
+        show_review(review_manager, movie, sort)
+        print("="*50)
+        print("1. 추가 검색   2. 이전")
+        check = input_int("선택: ", 1, 2)
+        if check==2:
+            break
+
 
 # 3. 리뷰 작성
 def create_review(member_manager, movie_manager, review_manager):
@@ -248,13 +255,16 @@ def create_review(member_manager, movie_manager, review_manager):
 def update_review(member_manager, review_manager, movie_manager):
     while True:
         reviews = review_manager.do_personal_review_retrieve(member_manager.member.member_id)
+        print("="*50)
         if not reviews:
             print("리뷰가 존재하지 않습니다")
         else:
+            print("내 리뷰 리스트")
             print("-"*50)
             for idx, review in enumerate(reviews):
                 print(f"{idx+1}. {movie_manager.id_to_name(review.movie_id)} | {review.rating} | 관람 {review.reg_date} | {"추천" if review.recommend == 'y' else "비추천"}")
                 print(review.review)
+            print("="*50)    
             print("리뷰 번호와 (수정/삭제)를 선택해 주세요")
             review_idx = input_int("리뷰 번호: ", 1, len(reviews))
             action = input_int("1. 수정  2.삭제: ", 1, 2)
@@ -332,7 +342,7 @@ def member_info(member_manager):
 
     # 이름으로 검색 시 검색된 회원이 2명 이상일 경우
     else:
-        print("동일한 검색 결과가 여러 명 존재합니다.")
+        
         member_number = input_int("수정 또는 삭제할 회원 번호를 입력하세요.", 1, len(right_members))
 
         selected_member = right_members[member_number - 1]

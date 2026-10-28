@@ -70,5 +70,14 @@
         "phone": "01077778888",
         "reg_date": "2026-08-21",
         "role": "USER"
+    },
+    {
+        "member_id": "vkslrtm123",
+        "name": "박민준",
+        "password": "abcd1234",
+        "email": "vkslrtm123@gmail.com",
+        "phone": "01012345678",
+        "reg_date": "2026-10-28",
+        "role": "ADMIN"
     }
 ]
