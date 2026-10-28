@@ -260,7 +260,7 @@ def member_info(member_manager):
         return
 
     # 회원 조회
-    admin_keyword = input("\n회원 정보를 입력해주세요. (ID, 이름, 연락처, Email)\n:").strip()
+    admin_keyword = input("\n회원 정보를 입력해주세요. (ID, 이름, 연락처, Email)\nEnter를 입력하면 전체 회원이 출력됩니다.\n입력: :").strip()
 
     right_members = []
 
@@ -299,9 +299,17 @@ def member_info(member_manager):
     if admin_menu == 0:
         return
 
-    member_number = input_int("회원 번호를 입력하세요", 1, len(right_members))
+    # 이름으로 검색 시 검색된 회원이 1명일 경우
+    if len(right_members) == 1:
+        selected_member = right_members[0]
 
-    selected_member = right_members[member_number - 1]
+    # 이름으로 검색 시 검색된 회원이 2명 이상일 경우
+    else:
+        print("동일한 검색 결과가 여러 명 존재합니다.")
+        member_number = input_int("수정 또는 삭제할 회원 번호를 입력하세요.", 1, len(right_members))
+
+        selected_member = right_members[member_number - 1]
+
     member_id = selected_member.member_id
 
     # 회원 정보 수정
