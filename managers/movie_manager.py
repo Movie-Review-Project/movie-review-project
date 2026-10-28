@@ -124,6 +124,8 @@ class MovieManager:
     # 영화 수정
     def do_update_movie(self,mod_movie:Movie) -> int:
         """영화 정보 수정"""
+        if mod_movie == None:
+            return 0
 
         for index, current_movie in enumerate(self.movies):
             if current_movie.movie_id == mod_movie.movie_id:
@@ -144,3 +146,41 @@ class MovieManager:
         for movie in self.movies:
             if movie_id == movie.movie_id:
                 return movie.movie_name
+
+
+def main():
+    manager = MovieManager()
+    movie01 = Movie(
+                movie_id="11000",
+                movie_name="영화1",
+                movie_genre="희극",
+                movie_release="2026-10-26",
+                movie_running_time="100",
+                movie_intro="깜짝 놀랄 공포 영화"
+    )
+    # movie = manager.search_movie("영화2")
+
+    # if movie:
+    #     movie.movie_name = "영화2"
+    #     movie.movie_genre = "가족"
+
+    # flag = manager.do_update_movie(movie)
+
+    # flag = manager.do_delete_movie("영화2")
+
+
+    # if flag == True:
+    #     print("성공")
+    # else:
+    #     print("실패")
+
+    # flag = manager.do_add_movie(movie01)
+
+    # if flag == 1:
+    #     print('저장 성공')
+    # else:
+    #     print("실패")
+
+
+if __name__ == "__main__":
+    main()
