@@ -97,7 +97,7 @@ class Movie:
             movie_genre = data["movie_genre"],
             movie_release = data["movie_release"],
             movie_running_time = data["movie_running_time"],
-            movie_intro = ["movie_intro"]
+            movie_intro = data["movie_intro"]
         )
         return movie
 

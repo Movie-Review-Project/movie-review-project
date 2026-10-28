@@ -11,6 +11,7 @@ REVIEW_FILE = os.path.join(BASE_DIR, "data", "reviews.json")
 
 
 # 리뷰 여러 개를 저장·조회·수정·삭제하는 "기능" 담당 (화면 출력 없음, 데이터만 반환)
+# 호출 형식은 팀 공용 main.py 기준
 class ReviewManager:
     # 매니저 생성 시 실행: 리뷰 저장소 준비 후 파일에서 불러옴
     def __init__(self):
@@ -35,6 +36,8 @@ class ReviewManager:
         # 딕셔너리 하나씩 Review 객체로 바꿔서 review_id를 키로 저장
         for data in data_list:
             review = Review.from_dict(data)
+            # 예전 데이터(true/false)도 'y'/'n'으로 통일
+            review.recommend = self._to_yn(review.recommend)
             self.reviews[review.review_id] = review
 
     # [내부용] self.reviews → reviews.json (성공 True / 실패 False)
@@ -65,39 +68,80 @@ class ReviewManager:
         except (TypeError, ValueError):
             return None
 
+    # [내부용] 추천 여부 → 'y' / 'n'으로 통일 (알 수 없는 값이면 None)
+    # 'y', 'Y', True → 'y' / 'n', 'N', False → 'n'
+    def _to_yn(self, value) -> str | None:
+        if value is True or (isinstance(value, str) and value.strip().lower() == "y"):
+            return "y"
+        if value is False or (isinstance(value, str) and value.strip().lower() == "n"):
+            return "n"
+        return None
+
+    # [내부용] 평점 → 실수 변환 (input()으로 받은 "4.5" 같은 문자열 대비, 변환 불가면 None)
+    def _to_rating(self, value) -> float | None:
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return None
+
     # [내부용] 저장·수정 전 값 검사 (화면에서 1차 검사해도 데이터 보호용으로 한 번 더)
     def _is_valid(self, review: Review) -> bool:
-        # 평점: 1.0 ~ 5.0
-        if not (1.0 <= review.rating <= 5.0):
+        # 평점: 숫자이고 0.0 ~ 5.0 (main.py 입력 범위 기준)
+        if not isinstance(review.rating, (int, float)) or not (0.0 <= review.rating <= 5.0):
             return False
-        # 리뷰 내용: 빈 값 불가
-        if review.review.strip() == "":
+        # 리뷰 내용: 문자열이고 빈 값 불가
+        if not isinstance(review.review, str) or review.review.strip() == "":
             return False
-        # 관람 날짜: 형식이 맞아야 하고, 미래 날짜 불가
-        watch_text = self._to_date_text(review.watch_date)
-        if watch_text is None:
+        # 추천 여부: 'y' 또는 'n'만
+        if review.recommend not in ("y", "n"):
             return False
-        if watch_text > date.today().isoformat():
-            return False
+        # 관람 날짜: 선택 항목 → 없으면 통과, 있으면 형식·미래 날짜 검사
+        if review.watch_date is not None:
+            watch_text = self._to_date_text(review.watch_date)
+            if watch_text is None or watch_text > date.today().isoformat():
+                return False
         return True
 
-    # [리뷰 작성] 새 리뷰 저장 → 성공 True / 실패 False
-    # review_id, reg_date는 여기서 자동으로 채움 (호출하는 쪽은 None으로 넘기면 됨)
-    def do_review_save(self, review: Review) -> bool:
-        if not self._is_valid(review):
+    # [리뷰 작성] 값을 받아 새 리뷰를 만들어 저장 → 성공 True / 실패 False
+    # main.py 호출 형식: do_review_save(회원ID, 영화ID, 평점, 리뷰내용, 추천여부('y'/'n'))
+    # watch_date(관람 날짜)는 선택. 안 넘기면 None으로 저장
+    # review_id, reg_date는 여기서 자동 생성
+    def do_review_save(
+        self,
+        member_id: int,
+        movie_id: str,
+        rating: float,
+        review_text: str,
+        recommend: str,
+        watch_date: str | None = None,
+    ) -> bool:
+        rating = self._to_rating(rating)
+        if rating is None:
             return False
-        # movie_id는 항상 str로 저장 (int로 넘어와도 JSON에 섞이지 않게)
-        review.movie_id = str(review.movie_id)
-        # 관람 날짜를 YYYY-MM-DD로 통일
-        review.watch_date = self._to_date_text(review.watch_date)
+        # 넘겨받은 값으로 Review 객체 생성 (ID·작성일은 아래에서 채움)
+        new_review = Review(
+            None,
+            member_id,
+            str(movie_id),               # movie_id는 항상 str로 저장
+            self._to_yn(recommend),      # 'y'/'n'으로 통일
+            rating,
+            review_text,
+            watch_date,
+            None,
+        )
+        if not self._is_valid(new_review):
+            return False
+        # 관람 날짜가 있으면 YYYY-MM-DD로 통일
+        if watch_date is not None:
+            new_review.watch_date = self._to_date_text(watch_date)
         # 새 ID = 기존 최대 ID + 1 (리뷰가 하나도 없으면 1)
-        review.review_id = max(self.reviews.keys(), default=0) + 1
+        new_review.review_id = max(self.reviews.keys(), default=0) + 1
         # 작성 일자 = 오늘 (YYYY-MM-DD → 작성일 정렬이 문자열 비교로 정확히 동작)
-        review.reg_date = date.today().isoformat()
-        self.reviews[review.review_id] = review
+        new_review.reg_date = date.today().isoformat()
+        self.reviews[new_review.review_id] = new_review
         # 파일 저장 실패 시 방금 넣은 리뷰를 다시 빼서 메모리와 파일 상태를 맞춤
         if not self._save_reviews():
-            del self.reviews[review.review_id]
+            del self.reviews[new_review.review_id]
             return False
         return True
 
@@ -107,33 +151,64 @@ class ReviewManager:
         # 작성일 같으면 review_id 큰 것(나중에 쓴 것)이 앞
         return sorted(my_reviews, key=lambda r: (r.reg_date, r.review_id), reverse=True)
 
-    # [리뷰 수정] review_id가 같은 기존 리뷰의 내용을 교체 → 성공 여부 반환
-    # 수정 가능: recommend, rating, review, watch_date / 유지: member_id, movie_id, reg_date
-    def do_personal_review_update(self, review: Review) -> bool:
-        original = self.reviews.get(review.review_id)
+    # [리뷰 수정] 기존 리뷰의 값을 바꿈 → 성공 여부 반환
+    # main.py 호출 형식: do_personal_review_update(review, rating=, content=, recommend=)
+    # None으로 넘긴 항목은 기존 값 유지 (main.py에서 Enter 입력 시 None)
+    # review는 Review 객체 또는 review_id 둘 다 가능
+    # ※ 회원 정보가 안 넘어와서 본인 확인 불가 → 화면에서 "내 리뷰 목록"의 리뷰만 넘겨야 함
+    def do_personal_review_update(
+        self,
+        review: Review | int,
+        rating: float | None = None,
+        content: str | None = None,
+        recommend: str | None = None,
+        watch_date: str | None = None,
+    ) -> bool:
+        review_id = review.review_id if isinstance(review, Review) else review
+        original = self.reviews.get(review_id)
         # 없는 리뷰
         if original is None:
             return False
-        # 작성자 본인만 수정 가능
-        if original.member_id != review.member_id:
-            return False
-        if not self._is_valid(review):
+        # None이면 기존 값, 아니면 새 값 (평점은 숫자 변환)
+        new_rating = original.rating
+        if rating is not None:
+            new_rating = self._to_rating(rating)
+            if new_rating is None:
+                return False
+        new_content = original.review if content is None else content
+        new_recommend = original.recommend if recommend is None else self._to_yn(recommend)
+        new_watch = original.watch_date if watch_date is None else watch_date
+        # 바뀔 값으로 임시 객체를 만들어 검사 (검사 통과 전엔 원본 안 건드림)
+        candidate = Review(
+            original.review_id,
+            original.member_id,
+            original.movie_id,
+            new_recommend,
+            new_rating,
+            new_content,
+            new_watch,
+            original.reg_date,
+        )
+        if not self._is_valid(candidate):
             return False
         # 저장 실패 대비 기존 값 보관
         backup = (original.recommend, original.rating, original.review, original.watch_date)
-        original.recommend = review.recommend
-        original.rating = review.rating
-        original.review = review.review
-        original.watch_date = self._to_date_text(review.watch_date)
+        original.recommend = new_recommend
+        original.rating = new_rating
+        original.review = new_content
+        original.watch_date = self._to_date_text(new_watch) if new_watch is not None else None
         # 파일 저장 실패 시 원래 값으로 되돌림
         if not self._save_reviews():
             original.recommend, original.rating, original.review, original.watch_date = backup
             return False
         return True
 
-    # [리뷰 삭제] review_id에 해당하는 리뷰 삭제 → 성공 여부 반환 (없는 ID면 False)
-    # ※ member_id 인자가 없어 본인 확인 불가 → 호출하는 쪽이 "내 리뷰 목록"에서 고른 ID만 넘겨야 함
-    def do_personal_review_delete(self, review_id: int) -> bool:
+    # [리뷰 삭제] 리뷰 삭제 → 성공 여부 반환 (없는 리뷰면 False)
+    # main.py 호출 형식: do_personal_review_delete(review)
+    # review는 Review 객체 또는 review_id 둘 다 가능
+    # ※ 본인 확인 불가 → 화면에서 "내 리뷰 목록"의 리뷰만 넘겨야 함
+    def do_personal_review_delete(self, review: Review | int) -> bool:
+        review_id = review.review_id if isinstance(review, Review) else review
         # pop: 꺼내면서 삭제, 없으면 None
         removed = self.reviews.pop(review_id, None)
         if removed is None:
@@ -144,38 +219,50 @@ class ReviewManager:
             return False
         return True
 
-    # [리뷰 조회] 특정 영화 리뷰를 조건에 맞게 필터·정렬해서 반환
-    # recommend: True=추천만 / False=비추천만 / None=전체
-    # sort_by: "rating"(평점) / "reg_date"(작성일), order: "asc"(오름차순) / "desc"(내림차순)
-    def do_review_retrieve(self, movie_id: str, recommend: bool | None, sort_by: str, order: str) -> list[Review]:
-        # 잘못된 정렬 값이면 바로 에러 → 호출하는 쪽 코드 실수를 빨리 발견
-        if sort_by not in ("rating", "reg_date"):
-            raise ValueError(f"sort_by는 'rating' 또는 'reg_date'만 가능합니다: {sort_by}")
+    # [리뷰 조회] 특정 영화 리뷰를 정렬해서 반환
+    # main.py 호출 형식: do_review_retrieve(movie_id, sort)
+    # sort: 1=최신순(작성일), 2=평점순 / "reg_date", "rating" 문자열도 허용
+    # recommend(선택): 'y'=추천만 / 'n'=비추천만 / None=전체(기본)
+    # order(선택): "desc"=내림차순(기본) / "asc"=오름차순
+    def do_review_retrieve(
+        self,
+        movie_id: str,
+        sort: int | str = 1,
+        recommend: str | None = None,
+        order: str = "desc",
+    ) -> list[Review]:
+        # 화면 번호(1, 2)와 문자열 둘 다 정렬 기준으로 변환
+        sort_map = {1: "reg_date", 2: "rating", "reg_date": "reg_date", "rating": "rating"}
+        # 잘못된 값이면 바로 에러 → 호출하는 쪽 코드 실수를 빨리 발견
+        if sort not in sort_map:
+            raise ValueError(f"sort는 1(최신순), 2(평점순)만 가능합니다: {sort}")
         if order not in ("asc", "desc"):
             raise ValueError(f"order는 'asc' 또는 'desc'만 가능합니다: {order}")
+        sort_by = sort_map[sort]
         # 1) 해당 영화 리뷰만
         movie_reviews = self._get_reviews_by_movie(movie_id)
-        # 2) 추천 여부 필터 (None이면 건너뜀 → 전체)
+        # 2) 추천 여부 필터 (None이면 건너뜀 → 전체, True/False로 넘겨도 'y'/'n'으로 변환)
         if recommend is not None:
-            movie_reviews = [r for r in movie_reviews if r.recommend == recommend]
+            target = self._to_yn(recommend)
+            movie_reviews = [r for r in movie_reviews if r.recommend == target]
         # 3) desc면 내림차순
         reverse = order == "desc"
         # 4) 평점순: 평점 같으면 작성일로 한 번 더 정렬
         if sort_by == "rating":
             return sorted(movie_reviews, key=lambda r: (r.rating, r.reg_date), reverse=reverse)
-        # 작성일순: 작성일 같으면 review_id(먼저 등록된 순)로 한 번 더 정렬
+        # 최신순: 작성일 같으면 review_id(나중에 등록된 것)로 한 번 더 정렬
         return sorted(movie_reviews, key=lambda r: (r.reg_date, r.review_id), reverse=reverse)
 
-    # [영화 상세] 특정 영화의 평균 평점 반환
+    # [영화 상세] 특정 영화의 평균 평점 반환 (소수점 1자리 반올림)
     # 리뷰가 없으면 None (0으로 나누기 에러 방지)
     def do_review_avg_rating(self, movie_id: str) -> float | None:
         movie_reviews = self._get_reviews_by_movie(movie_id)
         # 리뷰 0개면 평균을 낼 수 없으니 None
         if len(movie_reviews) == 0:
             return None
-        # 평점 합계 / 리뷰 개수
+        # 평점 합계 / 리뷰 개수 → 화면에 4.166666… 처럼 길게 안 나오게 반올림
         total = sum(r.rating for r in movie_reviews)
-        return total / len(movie_reviews)
+        return round(total / len(movie_reviews), 1)
 
     # [영화 상세] 특정 영화의 리뷰 Top3 반환
     # 기준: 평점 높은 순, 평점 같으면 최신 작성순 (팀 미정 → 가정)

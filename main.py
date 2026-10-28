@@ -1,6 +1,12 @@
 from managers.member_manager import MemberManager
 from managers.movie_manager import MovieManager
 from managers.review_manager import ReviewManager
+#  ↓ .py 끌어오면 날릴것들 ↓
+import json
+import os
+from datetime import datetime
+from types import SimpleNamespace
+
 
 # 정수 입력 (출력문구, min~max)
 def input_int(prompt, min_val, max_val):
@@ -43,20 +49,21 @@ def input_review_info(allow_empty = False):
             continue
         break
     while True:
-        recommand = input("추천 하시겠습니까? (y/n)").strip().lower()
-        if not recommand and allow_empty:
-            recommand = None
+        recommend = input("추천 하시겠습니까? (y/n)").strip().lower()
+        if not recommend and allow_empty:
+            recommend = None
             break
-        if recommand == 'y' or recommand == 'n':
+        if recommend == 'y' or recommend == 'n':
             break
         print("y 또는 n을 입력해주세요")
 
-    return rate, content, recommand
+    return rate, content, recommend
 
 # 시작 화면
 def show_start_menu():
     print("="*50)
     print("(영화 리뷰 & 관람 기록 관리 시스템)")
+    print("1. 회원가입   2. 로그인")
     start = input_int("선택: ", 1, 2)
     print()
     return start
@@ -90,21 +97,58 @@ def show_review(review_manager, movie, sort):
 
 
 # 회원 가입 선택 시
-def register():
-    pass
+def register(member_manager):
+    print("사용자 정보를 입력해주세요.")
+    
+    member_id = input("ID: ").strip()
+    name = input("이름: ").strip()
+    phone = input("연락처: ").strip()
+    email = input("Email: ").strip()
+    password = input("비밀번호: ").strip()
+
+    if not member_id or not name or not phone or not email or not password:
+        print("회원가입 실패. 모든 항목을 입력해주세요.")
+        return False
+    
+    result = member_manager.do_member_save(
+        member_id, name, password, email, phone
+        )
+
+    if result:
+        print(f"{name}님 환영합니다! 회원가입이 완료되었습니다.")
+        return True
+    else:
+        print("회원 가입에 실패했습니다.")
+        return False
 
 # 로그인 선택 시
-def login() -> bool: 
-    pass
+def login(member_manager): 
+    member_id = input("ID를 입력하세요: ").strip()
+    password = input("비밀번호를 입력하세요: ").strip()
+
+    if not member_manager.login(member_id, password):
+        return None
+
+    for member in member_manager.members:
+        if member["member_id"] == member_id:
+            if member.get("role", "USER").upper() == "ADMIN":
+                print("관리자 계정으로 로그인 되었습니다.")
+
+            return member
+
+    return None
 
 # 로그인 후
-def show_main_menu(user):
+def show_main_menu(member_manager):
+    print("="*50)
+    print(f"{member_manager.member.name}님 안녕하세요.")
     print("1. 영화검색")
     print("2. 영화 리뷰조회")
     print("3. 리뷰작성")
     print("4. 내 리뷰 조회 및 수정")
     print("5. 회원조회")
     print("6. 종료")
+    print("="*50)
 
 # 2. 리뷰 조회
 def view_review(movie_manager, review_manager): 
@@ -156,8 +200,8 @@ def create_review(member_manager, movie_manager, review_manager):
         print("리뷰 작성 -", movie.movie_name)
         
         while True:
-            rate, content, recommand = input_review_info()
-            success = review_manager.do_review_save(member_manager.member.member_id, movie.movie_id, rate, content, recommand)
+            rate, content, recommend = input_review_info()
+            success = review_manager.do_review_save(member_manager.member.member_id, movie.movie_id, rate, content, recommend)
             if not success:
                 print("실패했습니다")
                 print("1. 다시 작성    2. 종료")
@@ -214,37 +258,215 @@ def update_review(member_manager, review_manager, movie_manager):
             
 
 # 4. 회원 조회 선택할 경우
-def member_info():
-    pass
+def member_info(member_manager):
 
+    members = member_manager.do_retrieve()
+
+    if not members:
+        return
+
+    # 회원 조회
+    admin_keyword = input("\n회원 정보를 입력해주세요. (ID, 이름, 연락처, Email)\n:").strip()
+
+    right_members = []
+
+    for member in members:
+        if (
+            admin_keyword in str(member.get("member_id", ""))
+            or admin_keyword in member.get("name", "")
+            or admin_keyword in member.get("phone", "")
+            or admin_keyword in member.get("email", "")
+        ):
+            right_members.append(member)
+
+    if not right_members:
+        print("\n회원을 조회할 수 없습니다.")
+        right_members = members
+
+    for idx, member in enumerate(right_members):
+        print("=" * 50)
+        print(f"회원번호: {idx+1}")
+        print(f"ID: {member.get('member_id', '')}")
+        print(f"이름: {member.get('name', '')}")
+        print(f"연락처: {member.get('phone', '')}")
+        print(f"Email: {member.get('email', '')}")
+        print(f"가입일: {member.get('reg_date', '')}")
+        print(f"권한: {member.get('role', 'USER')}")
+
+
+    # 관리자 메뉴 출력
+    print("="*50)
+    print("1. 회원 정보 수정")
+    print("2. 회원 삭제")
+    print("0. 돌아가기")
+
+    admin_menu = input_int("선택: ", 0, 2)
+
+    if admin_menu == 0:
+        return
+
+    member_number = input_int("회원 번호를 입력하세요", 1, len(right_members))
+
+    selected_member = right_members[member_number - 1]
+    member_id = selected_member["member_id"]
+
+    # 회원 정보 수정
+    if admin_menu == 1:
+        print("="*50)
+        print("1. 이름 수정")
+        print("2. 비밀번호 수정")
+        print("3. 이메일 수정")
+        print("4. 연락처 수정")
+        print("0. 돌아가기")
+
+        update_menu = input_int("선택: ", 0, 4)
+
+        if update_menu == 0:
+            return
+
+        new_value = input("수정할 정보를 입력하세요: ").strip()
+
+        if not new_value:
+            print("수정할 정보를 입력해주세요.")
+            return
+
+        if update_menu == 1:
+            member_manager.do_member_update(member_id, name=new_value)
+
+        elif update_menu == 2:
+            member_manager.do_member_update(member_id, password=new_value)
+
+        elif update_menu == 3:
+            member_manager.do_member_update(member_id, email=new_value)
+
+        elif update_menu == 4:
+            member_manager.do_member_update(member_id, phone=new_value)
+
+
+    elif admin_menu == 2:
+        print("="*50)
+        print(f"삭제할 회원: {selected_member["name"]}")
+        print(f"회원 ID: {member_id}")
+
+        confirm = input("정말 삭제하시겠습니까? (y/n): ").strip().lower()
+
+        if confirm == "y":
+            member_manager.do_member_delete(admin_id, member_id)
+        else:
+            print("회원 삭제를 취소했습니다.")
+    
 # 영화 검색 선택할 경우
-def find_movie():
-    pass
+def find_movie(movie_manager, review_manager):
 
+    movies = movie_manager.movies
+
+    if not movies:
+        print("\n등록된 영화가 없습니다.")
+        return
+
+    while True:
+        keyword = input("\n검색할 영화 제목을 입력하세요: ").strip()
+
+        if keyword == "0":
+            return
+        
+        # 영화 제목 검색 시 일부, 전체 출력 여부
+        right_movies = [
+            movie for movie in movies
+            if keyword in movie.movie_name
+        ]
+
+        # 검색 결과 조회 안되는 경우
+        if not right_movies:
+            print("="*50)
+            print("\n검색어와 관련한 영화 정보를 찾을 수 없습니다.\n전체 영화 리스트를 출력합니다.")
+            print("="*50)
+            right_movies = movies
+    
+        else:
+            print(f"\n[{keyword}] 검색 결과 -> {len(right_movies)}개")
+
+        # 영화 목록 출력 (1번부터 마킹)
+        for idx, movie in enumerate(right_movies):
+            print(f"{idx+1}. {movie.movie_name}")
+
+        print("="*50)
+    
+        # 상세 정보 조회
+        choice = input_int(
+            "상세 정보를 열람할 영화의 번호를 입력하세요. (0: 다시 검색): ",
+            0,
+            len(right_movies)
+        )
+
+        if choice == 0:
+            continue
+
+        selected_movie = right_movies[choice - 1]
+
+        print("=" * 50)
+        print(selected_movie.movie_name)
+        print("=" * 50)
+        print(f"장르: {selected_movie.movie_genre}")
+        print(f"개봉일: {selected_movie.movie_release}")
+        print(f"러닝타임: {selected_movie.movie_running_time}분")
+        print(f"줄거리: {selected_movie.movie_intro}")
+
+        print("="*50)
+
+        avg_rating = review_manager.do_review_avg_rating(selected_movie.movie_id)
+
+        if avg_rating is None:
+            print("등록된 리뷰/평점이 없습니다.")
+        else:
+            print(f"평균 평점: {avg_rating:.1f} / 5.0")
+
+        print("="*50)
+        print("리뷰 TOP 3")
+
+        top_reviews = review_manager.do_review_top3(selected_movie.movie_id)
+
+        if not top_reviews:
+            print("등록된 리뷰가 없습니다.")
+
+        else:
+            for idx, review in enumerate(top_reviews):
+                print(f"{idx + 1}. {review.member_id} | {review.rating}점")
+                print(f" {review.review}")
+                print("="*50)
+
+        print("="*50)
+
+        return
+    
 def main():
     # 시작 화면
     member_manager = MemberManager()
     movie_manager = MovieManager()
     review_manager = ReviewManager()
+
+    member_manager.member = member_manager.members[1]
     
     while member_manager.member is None:
         start = show_start_menu()
 
         if start == 1: # 회원가입
-            register()
+            register(member_manager)
         elif start == 2: # 로그인
-            login()
+            login(member_manager)
     # 로그인 후
     menu = 0
     while(menu != 6):
         show_main_menu(member_manager)
         menu = input_int("선택: ", 1, 6)
+        print("="*50)
         if menu == 1:
-            # find_movie()
-            pass
+            find_movie(movie_manager, review_manager)
+
         elif menu == 2: # 영화 리뷰 조회
             view_review(movie_manager, review_manager)
-        elif menu == 3: # 리뷰 작성
+
+        elif menu == 3:  # 리뷰 작성
             create_review(member_manager, movie_manager, review_manager)
         elif menu == 4: # 리뷰 수정
             update_review(member_manager, review_manager, movie_manager)
@@ -253,7 +475,8 @@ def main():
                 print("회원 조회는 관리자만 할 수 있습니다")
                 continue
 
-            member_info()
+            member_info(member_manager)
+
 
 
 
