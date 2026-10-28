@@ -480,7 +480,7 @@ def main():
         elif menu == 4: # 리뷰 수정
             update_review(member_manager, review_manager, movie_manager)
         elif menu == 5:
-            if member_manager.member.role != "admin":
+            if member_manager.member.role != "ADMIN":
                 print("회원 조회는 관리자만 할 수 있습니다")
                 continue
 
