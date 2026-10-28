@@ -1,12 +1,6 @@
 from managers.member_manager import MemberManager
 from managers.movie_manager import MovieManager
 from managers.review_manager import ReviewManager
-#  ↓ .py 끌어오면 날릴것들 ↓
-import json
-import os
-from datetime import datetime
-from types import SimpleNamespace
-
 
 # 정수 입력 (출력문구, min~max)
 def input_int(prompt, min_val, max_val):
@@ -148,8 +142,7 @@ def show_main_menu(member_manager):
     print("4. 내 리뷰 조회 및 수정")
     print("5. 회원조회")
     print("6. 종료")
-    print("="*50)
-
+ 
 # 2. 리뷰 조회
 def view_review(movie_manager, review_manager): 
     print("검색할 영화 제목을 입력해주세요, 리스트를 보고싶으시면 enter를 눌러주세요")
@@ -231,6 +224,7 @@ def update_review(member_manager, review_manager, movie_manager):
         if not reviews:
             print("리뷰가 존재하지 않습니다")
         else:
+            print("-"*50)
             for idx, review in enumerate(reviews):
                 print(f"{idx+1}. {movie_manager.id_to_name(review.movie_id)} | {review.rating} | 관람 {review.reg_date} | {"추천" if review.recommend == 'y' else "비추천"}")
                 print(review.review)
@@ -351,7 +345,7 @@ def member_info(member_manager):
         confirm = input("정말 삭제하시겠습니까? (y/n): ").strip().lower()
 
         if confirm == "y":
-            member_manager.do_member_delete(admin_id, member_id)
+            member_manager.do_member_delete(member_id)
         else:
             print("회원 삭제를 취소했습니다.")
     
