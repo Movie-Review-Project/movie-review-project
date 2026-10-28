@@ -98,7 +98,7 @@ def register(member_manager):
     name = input("이름: ").strip()
     phone = input("연락처: ").strip()
     email = input("Email: ").strip()
-    password = input("비밀번호: ").strip()
+    password = input("비밀번호 (영문+숫자 조합 8~10자): ").strip()
 
     if not member_id or not name or not phone or not email or not password:
         print("회원가입 실패. 모든 항목을 입력해주세요.")
@@ -124,8 +124,8 @@ def login(member_manager):
         return None
 
     for member in member_manager.members:
-        if member["member_id"] == member_id:
-            if member.get("role", "USER").upper() == "ADMIN":
+        if member.member_id == member_id:
+            if member.role == "ADMIN":
                 print("관리자 계정으로 로그인 되었습니다.")
 
             return member
@@ -135,7 +135,7 @@ def login(member_manager):
 # 로그인 후
 def show_main_menu(member_manager):
     print("="*50)
-    print(f"{member_manager.member.name}님 안녕하세요.")
+    print(f"{member_manager.member.name}님 안녕하세요.\n")
     print("1. 영화검색")
     print("2. 영화 리뷰조회")
     print("3. 리뷰작성")
@@ -441,7 +441,8 @@ def find_movie(movie_manager, review_manager):
                 print(f"{idx + 1}. {review.member_id} | {review.rating}점")
                 print(f" {review.review}")
                 print("="*50)
-
+        
+        print("\n")
         print("="*50)
 
         print("1. 추가 검색")
@@ -461,7 +462,7 @@ def main():
     movie_manager = MovieManager()
     review_manager = ReviewManager()
 
-    member_manager.member = member_manager.members[1]
+    # member_manager.member = member_manager.members[1]
     
     while member_manager.member is None:
         start = show_start_menu()
