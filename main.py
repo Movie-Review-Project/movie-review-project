@@ -468,7 +468,7 @@ def find_movie(movie_manager, review_manager):
         print("="*50)
 
         print("1. 추가 검색")
-        print("0. 이전 메뉴로 돌아가기")
+        print("0. 메인 메뉴로 돌아가기")
 
         choice = input_int("선택: ", 0, 1)
 
