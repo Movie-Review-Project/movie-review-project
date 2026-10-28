@@ -16,7 +16,7 @@ class Movie:
     
         self.__movie_id = movie_id
         self.__movie_name = movie_name
-        self.__movie_genre = movie_genre
+        self.movie_genre = movie_genre
         self.__movie_release = movie_release
         self.__movie_running_time = movie_running_time
         self.__movie_intro = movie_intro
