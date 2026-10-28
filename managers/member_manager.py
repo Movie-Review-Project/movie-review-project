@@ -81,11 +81,11 @@ class MemberManager:
             'email': member.email,
             'phone': member.phone,
         }
-       
+
         for field, value in fields.items():
             if not self.is_valid_field(field, value):
                 return False
-        
+
         return True
 
     # 회원 정보 추가
@@ -96,10 +96,11 @@ class MemberManager:
         password: str,
         email: str,
         phone: str,
+        role: str = 'USER',
     ) -> bool:
         """회원가입(회원 정보 추가) 기능"""
 
-        member = Member(member_id, name, password, email, phone)
+        member = Member(member_id, name, password, email, phone, role)
 
         # 회원 정보 유효성 검사
         if not self.is_valid_member(member):
