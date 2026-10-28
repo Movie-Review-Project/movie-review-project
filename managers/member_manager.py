@@ -82,9 +82,22 @@ class MemberManager:
             'phone': member.phone,
         }
 
+        messages = {
+            'member_id': '아이디는 영문과 숫자 4~12자로 입력해주세요.',
+            'name': '이름을 정확하게 입력해주세요.',
+            'password': '비밀번호는 영문과 숫자를 포함한 8~10자로 입력해주세요.',
+            'email': '이메일 형식을 확인해주세요.',
+            'phone': '연락처는 하이픈(-) 없이 010으로 시작하는 11자리로 입력해주세요.',
+        }
+
         for field, value in fields.items():
             if not self.is_valid_field(field, value):
+                print(messages[field])
                 return False
+
+        if member.role not in ('USER', 'ADMIN'):
+            print('회원 권한은 USER 또는 ADMIN만 가능합니다.')
+            return False
 
         return True
 
@@ -104,7 +117,6 @@ class MemberManager:
 
         # 회원 정보 유효성 검사
         if not self.is_valid_member(member):
-            print('회원 정보를 정확하게 입력해주세요.')
             return False
 
         # 아이디 중복 검사
@@ -186,10 +198,6 @@ class MemberManager:
     ) -> bool:
         """회원 정보 수정 유효성 검사"""
 
-        # 아이디 검사
-        if not self.is_valid_field('member_id', member_id):
-            return False
-
         fields = {
             'name': name,
             'password': password,
@@ -197,13 +205,22 @@ class MemberManager:
             'phone': phone,
         }
 
+        messages = {
+            'name': '이름을 정확하게 입력해주세요.',
+            'password': '비밀번호는 영문과 숫자를 포함한 8~10자로 입력해주세요.',
+            'email': '이메일 형식을 확인해주세요.',
+            'phone': '연락처는 하이픈(-) 없이 010으로 시작하는 11자리로 입력해주세요.',
+        }
+
         # 수정할 정보가 없는 경우
         if all(value is None for value in fields.values()):
+            print('수정할 회원 정보를 입력해주세요.')
             return False
 
         # 입력한 항목만 유효성 검사
         for field, value in fields.items():
             if value is not None and not self.is_valid_field(field, value):
+                print(messages[field])
                 return False
 
         return True
@@ -221,7 +238,6 @@ class MemberManager:
 
         # 회원 수정 유효성 검사
         if not self.is_valid_update_member(member_id, name, password, email, phone):
-            print('수정할 회원 정보를 확인해주세요.')
             return False
 
         for index, current_member in enumerate(self.members):
