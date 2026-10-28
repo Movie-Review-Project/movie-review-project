@@ -272,10 +272,10 @@ def member_info(member_manager):
 
     for member in members:
         if (
-            admin_keyword in str(member.get("member_id", ""))
-            or admin_keyword in member.get("name", "")
-            or admin_keyword in member.get("phone", "")
-            or admin_keyword in member.get("email", "")
+            admin_keyword in str(member.member_id)
+            or admin_keyword in member.name
+            or admin_keyword in member.phone
+            or admin_keyword in member.email
         ):
             right_members.append(member)
 
@@ -286,12 +286,12 @@ def member_info(member_manager):
     for idx, member in enumerate(right_members):
         print("=" * 50)
         print(f"회원번호: {idx+1}")
-        print(f"ID: {member.get('member_id', '')}")
-        print(f"이름: {member.get('name', '')}")
-        print(f"연락처: {member.get('phone', '')}")
-        print(f"Email: {member.get('email', '')}")
-        print(f"가입일: {member.get('reg_date', '')}")
-        print(f"권한: {member.get('role', 'USER')}")
+        print(f"ID: {member.member_id}")
+        print(f"이름: {member.name}")
+        print(f"연락처: {member.phone}")
+        print(f"Email: {member.email}")
+        print(f"가입일: {member.reg_date}")
+        print(f"권한: {member.role}")
 
 
     # 관리자 메뉴 출력
@@ -308,7 +308,7 @@ def member_info(member_manager):
     member_number = input_int("회원 번호를 입력하세요", 1, len(right_members))
 
     selected_member = right_members[member_number - 1]
-    member_id = selected_member["member_id"]
+    member_id = selected_member.member_id
 
     # 회원 정보 수정
     if admin_menu == 1:
@@ -345,7 +345,7 @@ def member_info(member_manager):
 
     elif admin_menu == 2:
         print("="*50)
-        print(f"삭제할 회원: {selected_member["name"]}")
+        print(f"삭제할 회원: {selected_member.name}")
         print(f"회원 ID: {member_id}")
 
         confirm = input("정말 삭제하시겠습니까? (y/n): ").strip().lower()
