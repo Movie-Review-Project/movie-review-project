@@ -353,6 +353,11 @@ def member_info(member_manager):
         confirm = input("정말 삭제하시겠습니까? (y/n): ").strip().lower()
 
         if confirm == "y":
+            admin_id = member_manager.member.member_id
+
+            print(f"관리자 ID 확인: {admin_id}")
+            print(f"관리자 권한 확인: {member_manager.member.role}")
+
             member_manager.do_member_delete(member_id)
         else:
             print("회원 삭제를 취소했습니다.")
