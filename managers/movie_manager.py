@@ -124,6 +124,10 @@ class MovieManager:
     # 영화 수정
     def do_update_movie(self,mod_movie:Movie) -> int:
         """영화 정보 수정"""
+        movie = self.search_movie(mod_movie.movie_name)
+
+        if movie is None:
+            return 0
 
         for index, current_movie in enumerate(self.movies):
             if current_movie.movie_id == mod_movie.movie_id:
