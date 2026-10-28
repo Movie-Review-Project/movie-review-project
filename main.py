@@ -116,7 +116,12 @@ def register(member_manager):
         return False
     
     result = member_manager.do_member_save(
-        member_id, name, password, email, phone, role
+        member_id=member_id,
+        name=name,
+        password=password,
+        email=email,
+        phone=phone,
+        role=role,
         )
 
     if result:
@@ -205,7 +210,13 @@ def create_review(member_manager, movie_manager, review_manager):
         
         while True:
             rate, content, recommend = input_review_info()
-            success = review_manager.do_review_save(member_manager.member.member_id, movie.movie_id, rate, content, recommend)
+            success = review_manager.do_review_save(
+                member_id=member_manager.member.member_id,
+                movie_id=movie.movie_id,
+                rating=rate,
+                review_text=content,
+                recommend=recommend,
+                )
             if not success:
                 print("실패했습니다")
                 print("1. 다시 작성    2. 종료")
