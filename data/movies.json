@@ -118,13 +118,5 @@
         "movie_release": "2019-01-23",
         "movie_running_time": "111",
         "movie_intro": "낮에는 치킨장사! 밤에는 잠복근무! 지금까지 이런 수사는 없었다!"
-    },
-    {
-        "movie_id": "11000",
-        "movie_name": "영화1",
-        "movie_genre": "공포",
-        "movie_release": "2026-10-26",
-        "movie_running_time": "100",
-        "movie_intro": "깜짝 놀랄 공포 영화"
     }
 ]
