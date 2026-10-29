@@ -266,7 +266,10 @@ def update_review(member_manager, review_manager, movie_manager):
                 print(review.review)
             print("="*50)    
             print("리뷰 번호와 (수정/삭제)를 선택해 주세요")
-            review_idx = input_int("리뷰 번호: ", 1, len(reviews))
+            print("이전으로 돌아가려면 0을 입력해주세요")
+            review_idx = input_int("리뷰 번호: ", 0, len(reviews))
+            if review_idx == 0 :
+                break
             action = input_int("1. 수정  2.삭제: ", 1, 2)
             review = reviews[review_idx-1]
             if action == 1:
