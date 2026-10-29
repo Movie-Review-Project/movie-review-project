@@ -2,6 +2,111 @@ from managers.member_manager import MemberManager
 from managers.movie_manager import MovieManager
 from managers.review_manager import ReviewManager
 
+import sys
+import time
+import math
+import shutil
+
+RESET = "\033[0m"
+CYAN = "\033[96m"
+YELLOW = "\033[93m"
+GRAY = "\033[90m"
+GREEN = "\033[92m"
+
+def move(row, col):
+    sys.stdout.write(f"\033[{row};{col}H")
+
+
+def draw_clock(number, progress, width, height):
+    # 7줄짜리 대형 숫자
+    digits = {
+        3: [
+            " ███████ ",
+            "       ██",
+            "       ██",
+            "  ██████ ",
+            "       ██",
+            "       ██",
+            " ███████ ",
+        ],
+        2: [
+            " ███████ ",
+            "██     ██",
+            "       ██",
+            "  ██████ ",
+            " ██      ",
+            "██       ",
+            "█████████",
+        ],
+        1: [
+            "    ██   ",
+            "  ████   ",
+            "    ██   ",
+            "    ██   ",
+            "    ██   ",
+            "    ██   ",
+            " ███████ ",
+        ],
+    }
+
+    canvas = [[" " for _ in range(width)] for _ in range(height)]
+
+    cx = width // 2
+    cy = height // 2
+
+    # 터미널 글자 비율 보정
+    aspect = 2.0
+    radius = min(8.5, (height - 2) / 2, (width - 2) / (2 * aspect))
+
+    # 원형 테두리 + 십자선
+    for y in range(height):
+        for x in range(width):
+            dx = (x - cx) / aspect
+            dy = y - cy
+            r = math.hypot(dx, dy)
+
+            if abs(r - radius) < 0.35:
+                canvas[y][x] = "●"
+            elif abs(r - (radius - 1.2)) < 0.22:
+                canvas[y][x] = "·"
+            elif abs(dx) < 0.2 or abs(dy) < 0.2:
+                canvas[y][x] = "·"
+
+    # 시계 방향으로 회전하는 바늘
+    angle = -math.pi / 2 + progress * 2 * math.pi
+
+    for r_step in range(20, int(radius * 10)):
+        r = r_step / 10
+        x = round(cx + math.cos(angle) * r * aspect)
+        y = round(cy + math.sin(angle) * r)
+
+        if 0 <= x < width and 0 <= y < height:
+            canvas[y][x] = "█"
+
+    # 중앙 숫자 영역을 비우고 크게 출력
+    digit = digits[number]
+    digit_width = max(len(line) for line in digit)
+
+    left = cx - digit_width // 2
+    top = cy - len(digit) // 2
+
+    for i, line in enumerate(digit):
+        for j, char in enumerate(line):
+            y = top + i
+            x = left + j
+
+            if 0 <= x < width and 0 <= y < height:
+                # 숫자 주변의 바늘과 가이드라인 제거
+                canvas[y][x] = char
+
+    # 화면 출력
+    sys.stdout.write("\033[H")
+
+    for row in canvas:
+        sys.stdout.write(YELLOW + "".join(row) + RESET + "\n")
+
+    sys.stdout.flush()
+
 # 정수 입력 (출력문구, min~max)
 def input_int(prompt, min_val, max_val):
     while True:
@@ -501,7 +606,15 @@ def find_movie(movie_manager, review_manager):
 
         elif choice == 0:
             return
-    
+rabbit = [
+    r" (\_/)",
+    r" (o.o)",
+    r" / >o "
+]
+
+def move(row, col):
+    sys.stdout.write(f"\033[{row};{col}H")
+
 def main():
     # 시작 화면
     member_manager = MemberManager()
@@ -518,9 +631,56 @@ def main():
   ║   ╚═════╝╚═╝╚═╝  ╚═══╝╚══════╝╚══════╝ ╚═════╝  ╚═════╝      ║
   ║                                                              ║
   ║                    Y O U R   M O V I E   L O G               ║
-  ╚══════════════════════════════════════════════════════════════╝                                                                                                                                           
-    """
-    print(logo)
+    ╚══════════════════════════════════════════════════════════════╝                                                                                                                                           
+"""
+   
+    # print(logo)
+    size = shutil.get_terminal_size()
+    width = min(size.columns - 1, 70)
+    height = min(size.lines - 2, 21)
+
+    if width < 40 or height < 19:
+        print("터미널을 가로 40칸, 세로 21줄 이상으로 늘려주세요.")
+        return
+
+    sys.stdout.write("\033[?25l")
+
+    try:
+        sys.stdout.write("\033[2J\033[H")
+
+        # 3초 카운트다운
+        for number in [3, 2, 1]:
+            for frame in range(20):
+                draw_clock(number, frame / 20, width, height)
+                time.sleep(0.05)
+
+        # 필름 전환
+        sys.stdout.write("\033[2J\033[H")
+        print("\n" * 5)
+        print("NOW SHOWING".center(width))
+        time.sleep(0.5)
+
+        # 로고 등장
+        logo_lines = logo.strip("\n").splitlines()
+
+        for color in ["\033[90m", YELLOW, CYAN]:
+            sys.stdout.write("\033[2J\033[H")
+            print("\n" * 4)
+
+            for line in logo_lines:
+                print(color + line.center(width) + RESET)
+
+            print()
+            print("MOVIE REVIEW SYSTEM".center(width))
+            sys.stdout.flush()
+            time.sleep(0.5)
+
+    except KeyboardInterrupt:
+        pass
+
+    finally:
+        sys.stdout.write("\033[?25h")
+        sys.stdout.flush()
     
     while member_manager.member is None:
         start = show_start_menu()
