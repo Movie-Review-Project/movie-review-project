@@ -481,7 +481,7 @@ def find_movie(movie_manager, review_manager):
 
         else:
             for idx, review in enumerate(top_reviews):
-                print(f"{idx + 1}. {review.member_id} | {review.rating}점")
+                print(f"{idx + 1}. {review.member_id} | {review.rating}점 | 관람 {review.reg_date}| {"추천" if review.recommend == 'y' else "비추천"}")
                 print(f" {review.review}")
                 print("="*50)
         
