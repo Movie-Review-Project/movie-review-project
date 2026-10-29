@@ -1,7 +1,7 @@
 [
   {
     "review_id": 1,
-    "member_id": 1,
+    "member_id": "admin",
     "movie_id": "10001",
     "recommend": "y",
     "rating": 5.0,
@@ -48,5 +48,15 @@
     "review": "러닝타임이 좀 길다",
     "watch_date": "2026-09-01",
     "reg_date": "2026-10-10"
+  },
+  {
+    "review_id": 6,
+    "member_id": "vkslrtm123",
+    "movie_id": "10002",
+    "recommend": "y",
+    "rating": 4.0,
+    "review": "테스트",
+    "watch_date": null,
+    "reg_date": "2026-10-29"
   }
 ]
