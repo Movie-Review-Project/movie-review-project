@@ -87,10 +87,11 @@ def show_review(review_manager, movie, sort):
         print(f"리뷰 목록 - {movie.movie_name}")
         print("-"*50)
         print(f"평균평점 : {review_manager.do_review_avg_rating(movie.movie_id)} / 5.0 (리뷰 {len(reviews)}개)")
-        print("-"*50)
         for idx, review in enumerate(reviews):
+            print("-"*50)
             print(f"{idx+1}. {review.member_id} | {review.rating}점 | {'추천' if review.recommend == 'y' else '비추천'}")
             print(f"   {review.review}")
+            
 
 
 # 회원 가입 선택 시
