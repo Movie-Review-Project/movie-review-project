@@ -157,7 +157,7 @@ class ReviewManager:
     # review_id, reg_date는 여기서 자동 생성
     def do_review_save(
         self,
-        member_id: int | str,
+        member_id: str,
         movie_id: str,
         rating: float,
         review_text: str,
@@ -201,8 +201,8 @@ class ReviewManager:
         return True
 
     # [내 관람 기록] 특정 회원이 쓴 리뷰만, 작성일 최신순으로 반환
-    # 양쪽을 str로 바꿔서 비교 → 회원 ID가 int든 str든 매칭됨 (movie_id와 같은 방식)
-    def do_personal_review_retrieve(self, member_id: int | str) -> list[Review]:
+    # 회원 ID는 members.json 기준 문자열(예: "hong1234"), 양쪽 str로 비교해 형식이 섞여도 매칭
+    def do_personal_review_retrieve(self, member_id: str) -> list[Review]:
         my_reviews = [r for r in self.reviews.values() if str(r.member_id) == str(member_id)]
         # 작성일 같으면 review_id 큰 것(나중에 쓴 것)이 앞
         return sorted(my_reviews, key=lambda r: (r.reg_date, r.review_id), reverse=True)

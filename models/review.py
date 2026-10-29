@@ -3,7 +3,7 @@ class Review:
     def __init__(
             self,
             review_id: int,
-            member_id: int,
+            member_id: str,
             movie_id: str,
             recommend: str,
             rating: float,
