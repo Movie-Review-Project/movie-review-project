@@ -93,7 +93,6 @@ def show_review(review_manager, movie, sort):
             print(f"   {review.review}")
             
 
-
 # 회원 가입 선택 시
 def register(member_manager):
     print("사용자 정보를 입력해주세요.")
@@ -505,6 +504,20 @@ def main():
     member_manager = MemberManager()
     movie_manager = MovieManager()
     review_manager = ReviewManager()
+    logo = """
+  ╔══════════════════════════════════════════════════════════════╗
+  ║                                                              ║
+  ║   ██████╗██╗███╗   ██╗███████╗██╗      ██████╗  ██████╗      ║
+  ║  ██╔════╝██║████╗  ██║██╔════╝██║     ██╔═══██╗██╔════╝      ║
+  ║  ██║     ██║██╔██╗ ██║█████╗  ██║     ██║   ██║██║  ███╗     ║
+  ║  ██║     ██║██║╚██╗██║██╔══╝  ██║     ██║   ██║██║   ██║     ║
+  ║  ╚██████╗██║██║ ╚████║███████╗███████╗╚██████╔╝╚██████╔╝     ║
+  ║   ╚═════╝╚═╝╚═╝  ╚═══╝╚══════╝╚══════╝ ╚═════╝  ╚═════╝      ║
+  ║                                                              ║
+  ║                    Y O U R   M O V I E   L O G               ║
+  ╚══════════════════════════════════════════════════════════════╝                                                                                                                                           
+    """
+    print(logo)
     
     while member_manager.member is None:
         start = show_start_menu()
