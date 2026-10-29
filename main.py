@@ -6,18 +6,21 @@ import sys
 import time
 import math
 import shutil
+import random
 
 RESET = "\033[0m"
 CYAN = "\033[96m"
 YELLOW = "\033[93m"
 GRAY = "\033[90m"
 GREEN = "\033[92m"
+WHITE = "\033[1;97m"
+REVERSE = "\033[7m"
 
 def move(row, col):
     sys.stdout.write(f"\033[{row};{col}H")
 
 
-def draw_clock(number, progress, width, height):
+def draw_clock(number, progress, width, height, flash=False):
     # 7줄짜리 대형 숫자
     digits = {
         3: [
@@ -50,40 +53,64 @@ def draw_clock(number, progress, width, height):
     }
 
     canvas = [[" " for _ in range(width)] for _ in range(height)]
+    colors = [[GRAY for _ in range(width)] for _ in range(height)]
+
+    def put(x, y, char, color):
+        if 0 <= x < width and 0 <= y < height:
+            canvas[y][x] = char
+            colors[y][x] = color
+
+    # 양옆 필름 스트립 (프레임마다 구멍이 움직여 필름이 돌아가는 느낌)
+    margin = 4
+    shift = int(progress * 20) % 2
+
+    for y in range(height):
+        hole = "█" if (y + shift) % 2 == 0 else " "
+        for x in (1, 2):
+            put(x, y, hole, GRAY)
+            put(width - 1 - x, y, hole, GRAY)
+        put(margin - 1, y, "│", GRAY)
+        put(width - margin, y, "│", GRAY)
 
     cx = width // 2
     cy = height // 2
 
     # 터미널 글자 비율 보정
     aspect = 2.0
-    radius = min(8.5, (height - 2) / 2, (width - 2) / (2 * aspect))
+    radius = min(8.5, (height - 2) / 2, (width - 2 * margin - 2) / (2 * aspect))
 
-    # 원형 테두리 + 십자선
+    # 영사기 불빛 깜빡임
+    ring_color = YELLOW if random.random() > 0.15 else GRAY
+
+    # 원형 테두리 + 십자선 + 바늘이 지나간 영역 음영
     for y in range(height):
-        for x in range(width):
+        for x in range(margin, width - margin):
             dx = (x - cx) / aspect
             dy = y - cy
             r = math.hypot(dx, dy)
 
             if abs(r - radius) < 0.35:
-                canvas[y][x] = "●"
+                put(x, y, "●", ring_color)
             elif abs(r - (radius - 1.2)) < 0.22:
-                canvas[y][x] = "·"
+                put(x, y, "·", ring_color)
             elif abs(dx) < 0.2 or abs(dy) < 0.2:
-                canvas[y][x] = "·"
+                put(x, y, "·", GRAY)
+            elif r < radius - 1.2:
+                # 12시 방향 0, 시계 방향으로 증가하는 각도 (0~1)
+                a = (math.atan2(dx, -dy) / (2 * math.pi)) % 1
+                if a < progress:
+                    put(x, y, "▓" if progress - a < 0.04 else "░", GRAY)
 
     # 시계 방향으로 회전하는 바늘
     angle = -math.pi / 2 + progress * 2 * math.pi
 
-    for r_step in range(20, int(radius * 10)):
+    for r_step in range(int((radius - 1.2) * 10)):
         r = r_step / 10
         x = round(cx + math.cos(angle) * r * aspect)
         y = round(cy + math.sin(angle) * r)
+        put(x, y, "█", WHITE)
 
-        if 0 <= x < width and 0 <= y < height:
-            canvas[y][x] = "█"
-
-    # 중앙 숫자 영역을 비우고 크게 출력
+    # 중앙 숫자 크게 출력
     digit = digits[number]
     digit_width = max(len(line) for line in digit)
 
@@ -92,19 +119,37 @@ def draw_clock(number, progress, width, height):
 
     for i, line in enumerate(digit):
         for j, char in enumerate(line):
-            y = top + i
-            x = left + j
+            if char != " ":
+                put(left + j, top + i, char, WHITE)
 
-            if 0 <= x < width and 0 <= y < height:
-                # 숫자 주변의 바늘과 가이드라인 제거
-                canvas[y][x] = char
+    # 낡은 필름 질감 (먼지 + 세로 스크래치)
+    for _ in range(width * height // 60):
+        x = random.randint(margin, width - margin - 1)
+        y = random.randint(0, height - 1)
+        if canvas[y][x] == " ":
+            put(x, y, random.choice(".'`,"), GRAY)
 
-    # 화면 출력
-    sys.stdout.write("\033[H")
+    if random.random() < 0.35:
+        sx = random.randint(margin, width - margin - 1)
+        start = random.randint(0, height // 2)
+        for y in range(start, random.randint(start + 1, height)):
+            if canvas[y][sx] in (" ", "░"):
+                put(sx, y, "¦", GRAY)
 
-    for row in canvas:
-        sys.stdout.write(YELLOW + "".join(row) + RESET + "\n")
+    # 화면 출력 (flash면 반전시켜 번쩍이는 효과)
+    prefix = REVERSE if flash else ""
+    out = ["\033[H"]
 
+    for y in range(height):
+        current = None
+        for x in range(width):
+            if colors[y][x] != current:
+                current = colors[y][x]
+                out.append(RESET + prefix + current)
+            out.append(canvas[y][x])
+        out.append(RESET + "\n")
+
+    sys.stdout.write("".join(out))
     sys.stdout.flush()
 
 # 정수 입력 (출력문구, min~max)
@@ -162,8 +207,8 @@ def input_review_info(allow_empty = False):
 def show_start_menu():
     print("="*50)
     print("(영화 리뷰 & 관람 기록 관리 시스템)")
-    print("1. 회원가입   2. 로그인")
-    start = input_int("선택: ", 1, 2)
+    print("1. 회원가입   2. 로그인   0. 종료")
+    start = input_int("선택: ", 0, 2)
     print()
     return start
 
@@ -606,14 +651,6 @@ def find_movie(movie_manager, review_manager):
 
         elif choice == 0:
             return
-rabbit = [
-    r" (\_/)",
-    r" (o.o)",
-    r" / >o "
-]
-
-def move(row, col):
-    sys.stdout.write(f"\033[{row};{col}H")
 
 def main():
     # 시작 화면
@@ -654,6 +691,12 @@ def main():
                 draw_clock(number, frame / 20, width, height)
                 time.sleep(0.05)
 
+            # 숫자가 넘어갈 때 화면이 번쩍 (2에서는 영사기 비프음)
+            if number == 2:
+                sys.stdout.write("\a")
+            draw_clock(number, 1.0, width, height, flash=True)
+            time.sleep(0.05)
+
         # 필름 전환
         sys.stdout.write("\033[2J\033[H")
         print("\n" * 5)
@@ -684,8 +727,10 @@ def main():
     
     while member_manager.member is None:
         start = show_start_menu()
-
-        if start == 1: # 회원가입
+        if start == 0:
+            print("프로그램을 종료합니다")
+            return
+        elif start == 1: # 회원가입
             register(member_manager)
         elif start == 2: # 로그인
             login(member_manager)
