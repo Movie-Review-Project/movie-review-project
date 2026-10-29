@@ -57,8 +57,8 @@ def input_review_info(allow_empty = False):
 def show_start_menu():
     print("="*50)
     print("(영화 리뷰 & 관람 기록 관리 시스템)")
-    print("1. 회원가입   2. 로그인")
-    start = input_int("선택: ", 1, 2)
+    print("1. 회원가입   2. 로그인   0. 종료")
+    start = input_int("선택: ", 0, 2)
     print()
     return start
 
@@ -524,8 +524,10 @@ def main():
     
     while member_manager.member is None:
         start = show_start_menu()
-
-        if start == 1: # 회원가입
+        if start == 0:
+            print("프로그램을 종료합니다.")
+            return
+        elif start == 1: # 회원가입
             register(member_manager)
         elif start == 2: # 로그인
             login(member_manager)
